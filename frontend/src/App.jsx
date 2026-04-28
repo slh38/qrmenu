@@ -20,6 +20,7 @@ export default function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/menu/:slug" element={<PublicMenu />} />
+      <Route path="/menu/:slug/category/:categoryId" element={<PublicMenu />} />
       <Route
         path="/dashboard"
         element={

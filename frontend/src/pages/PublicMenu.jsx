@@ -1,13 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { API_URL } from "../lib/api";
 
 const socialConfig = {
   instagram: {
     label: "Instagram",
-    icon: (
-      <path d="M8 3h8a5 5 0 0 1 5 5v8a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5V8a5 5 0 0 1 5-5Zm0 2.5A2.5 2.5 0 0 0 5.5 8v8A2.5 2.5 0 0 0 8 18.5h8a2.5 2.5 0 0 0 2.5-2.5V8A2.5 2.5 0 0 0 16 5.5H8Zm8.75 1.1a.9.9 0 1 1 0 1.8.9.9 0 0 1 0-1.8ZM12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8Zm0 2.2a1.8 1.8 0 1 0 0 3.6 1.8 1.8 0 0 0 0-3.6Z" />
-    ),
+    icon: <path d="M8 3h8a5 5 0 0 1 5 5v8a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5V8a5 5 0 0 1 5-5Zm0 2.5A2.5 2.5 0 0 0 5.5 8v8A2.5 2.5 0 0 0 8 18.5h8a2.5 2.5 0 0 0 2.5-2.5V8A2.5 2.5 0 0 0 16 5.5H8Zm8.75 1.1a.9.9 0 1 1 0 1.8.9.9 0 0 1 0-1.8ZM12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8Zm0 2.2a1.8 1.8 0 1 0 0 3.6 1.8 1.8 0 0 0 0-3.6Z" />,
   },
   facebook: {
     label: "Facebook",
@@ -27,10 +25,10 @@ const socialConfig = {
   },
 };
 
-function SocialIcon({ path }) {
+function SocialIcon({ icon }) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
-      {path}
+      {icon}
     </svg>
   );
 }
@@ -53,34 +51,6 @@ function formatPrice(item) {
   return `${item.price} ${item.currency}`;
 }
 
-function ScrollTabs({ categories, activeCategory, onSelect, light = false }) {
-  return (
-    <div className={`sticky top-0 z-30 border-b backdrop-blur ${light ? "border-slate-200/80 bg-white/85" : "border-white/10 bg-[#081a3dcc]"}`}>
-      <div className="mx-auto flex max-w-6xl gap-3 overflow-x-auto px-4 py-4 sm:px-6">
-        {categories.map((category) => (
-          <button
-            key={category._id}
-            type="button"
-            onClick={() => onSelect(category._id)}
-            className={`shrink-0 rounded-full border px-4 py-2 text-sm font-semibold transition ${
-              activeCategory === category._id
-                ? light
-                  ? "border-transparent text-white"
-                  : "border-transparent text-white"
-                : light
-                  ? "border-slate-200 bg-white text-slate-700"
-                  : "border-white/10 bg-white/10 text-white/80"
-            }`}
-            style={activeCategory === category._id ? { backgroundColor: "var(--accent-color)" } : undefined}
-          >
-            {category.name}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 function SocialBar({ socials, dark = false }) {
   if (!socials.length) {
     return null;
@@ -99,283 +69,240 @@ function SocialBar({ socials, dark = false }) {
             dark ? "border-white/10 bg-white/10 text-white hover:bg-white/15" : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
           }`}
         >
-          <SocialIcon path={social.icon} />
+          <SocialIcon icon={social.icon} />
         </a>
       ))}
     </div>
   );
 }
 
-function ShowcaseTheme({ menu, categories, activeCategory, onSelect }) {
-  const socials = getVisibleSocials(menu.tenant.socialLinks);
+function PageHeader({ tenant, socials, theme }) {
+  const isDark = theme !== "minimal";
 
-  return (
-    <div className="min-h-screen bg-[#f8f3ec] text-[#1e1b18]" style={{ "--accent-color": menu.tenant.primaryColor || "#2563eb" }}>
-      <header className="relative overflow-hidden bg-[#101828] text-white">
-        <div
-          className="absolute inset-0 bg-cover bg-center opacity-35"
-          style={{ backgroundImage: `url(${menu.tenant.coverImageUrl || menu.tenant.logoUrl || ""})` }}
-        />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(16,24,40,0.3),rgba(16,24,40,0.92))]" />
-        <div className="relative mx-auto max-w-6xl px-4 pb-10 pt-10 sm:px-6">
-          <div className="flex items-start justify-between gap-4">
-            <div className="max-w-2xl">
-              <div className="mb-6 inline-flex rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs uppercase tracking-[0.35em] text-white/70">
-                QRMenu Signature
-              </div>
-              <h1 className="font-display text-4xl font-extrabold tracking-tight sm:text-6xl">{menu.tenant.businessName}</h1>
-              {menu.tenant.tagline ? <p className="mt-4 max-w-xl text-base text-white/75 sm:text-lg">{menu.tenant.tagline}</p> : null}
-              <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/65">
-                {menu.tenant.address ? <span>{menu.tenant.address}</span> : null}
-                {menu.tenant.phone ? <span>{menu.tenant.phone}</span> : null}
-              </div>
-            </div>
-            {menu.tenant.logoUrl ? (
-              <img src={menu.tenant.logoUrl} alt={menu.tenant.businessName} className="hidden h-28 w-28 rounded-[2rem] object-cover shadow-soft sm:block" />
-            ) : null}
-          </div>
-
-          <div className="mt-8">
-            <SocialBar socials={socials} dark />
-          </div>
-        </div>
-      </header>
-
-      <ScrollTabs categories={categories} activeCategory={activeCategory} onSelect={onSelect} light />
-
-      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-        <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {categories.map((category) => (
-            <button
-              key={category._id}
-              type="button"
-              onClick={() => onSelect(category._id)}
-              className="group relative overflow-hidden rounded-[2rem] bg-slate-900 text-left shadow-soft"
-            >
-              {getCategoryImage(category, menu.tenant) ? (
-                <img
-                  src={getCategoryImage(category, menu.tenant)}
-                  alt={category.name}
-                  loading="lazy"
-                  className="h-56 w-full object-cover transition duration-500 group-hover:scale-105"
-                />
-              ) : (
-                <div className="h-56 w-full bg-gradient-to-br from-slate-800 to-slate-600" />
-              )}
-              <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent,rgba(15,23,42,0.88))]" />
-              <div className="absolute inset-x-0 bottom-0 p-5 text-white">
-                <p className="text-xs uppercase tracking-[0.3em] text-white/65">{category.items.length} urun</p>
-                <h2 className="mt-2 font-display text-3xl font-extrabold">{category.name}</h2>
-                {category.description ? <p className="mt-2 text-sm text-white/75">{category.description}</p> : null}
-              </div>
-            </button>
-          ))}
-        </section>
-
-        <div className="mt-10 space-y-10">
-          {categories.map((category) => (
-            <section key={category._id} id={`category-${category._id}`} className="scroll-mt-28">
-              <div className="mb-5 flex items-end justify-between gap-4">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Kategori</p>
-                  <h3 className="mt-2 font-display text-3xl font-extrabold text-slate-900">{category.name}</h3>
-                </div>
-              </div>
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                {category.items.map((item) => (
-                  <article key={item._id} className="overflow-hidden rounded-[2rem] border border-white/70 bg-white shadow-soft">
-                    {item.imageUrl ? (
-                      <img src={item.imageUrl} alt={item.name} loading="lazy" className="h-52 w-full object-cover" />
-                    ) : (
-                      <div className="h-52 bg-gradient-to-br from-slate-100 to-slate-200" />
-                    )}
-                    <div className="p-5">
-                      <div className="flex items-start justify-between gap-4">
-                        <h4 className="font-display text-2xl font-extrabold text-slate-900">{item.name}</h4>
-                        <div className="rounded-full px-4 py-2 text-sm font-bold text-white" style={{ backgroundColor: "var(--accent-color)" }}>
-                          {formatPrice(item)}
-                        </div>
-                      </div>
-                      {item.description ? <p className="mt-3 text-sm leading-6 text-slate-600">{item.description}</p> : null}
-                    </div>
-                  </article>
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
-      </main>
-    </div>
-  );
-}
-
-function MinimalTheme({ menu, categories, activeCategory, onSelect }) {
-  const socials = getVisibleSocials(menu.tenant.socialLinks);
-
-  return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-900" style={{ "--accent-color": menu.tenant.primaryColor || "#2563eb" }}>
+  if (theme === "minimal") {
+    return (
       <header className="border-b border-slate-200 bg-white">
         <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
-          <div className="flex items-start justify-between gap-4">
-            <div className="max-w-2xl">
-              <h1 className="font-display text-4xl font-extrabold tracking-tight">{menu.tenant.businessName}</h1>
-              {menu.tenant.tagline ? <p className="mt-3 text-sm leading-6 text-slate-600">{menu.tenant.tagline}</p> : null}
+          <div className="flex items-start gap-4">
+            {tenant.logoUrl ? (
+              <img src={tenant.logoUrl} alt={tenant.businessName} className="h-20 w-20 rounded-[1.5rem] object-cover shadow-sm" />
+            ) : null}
+            <div className="min-w-0 flex-1">
+              <h1 className="font-display text-4xl font-extrabold tracking-tight text-slate-900">{tenant.businessName}</h1>
+              {tenant.tagline ? <p className="mt-3 text-sm leading-6 text-slate-600">{tenant.tagline}</p> : null}
               <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm text-slate-500">
-                {menu.tenant.address ? <span>{menu.tenant.address}</span> : null}
-                {menu.tenant.phone ? <span>{menu.tenant.phone}</span> : null}
+                {tenant.address ? <span>{tenant.address}</span> : null}
+                {tenant.phone ? <span>{tenant.phone}</span> : null}
               </div>
             </div>
-            {menu.tenant.logoUrl ? (
-              <img src={menu.tenant.logoUrl} alt={menu.tenant.businessName} className="h-20 w-20 rounded-[1.5rem] object-cover" />
-            ) : null}
           </div>
           <div className="mt-5">
             <SocialBar socials={socials} />
           </div>
         </div>
       </header>
+    );
+  }
 
-      <ScrollTabs categories={categories} activeCategory={activeCategory} onSelect={onSelect} light />
-
-      <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
-        <div className="space-y-10">
-          {categories.map((category) => (
-            <section key={category._id} id={`category-${category._id}`} className="scroll-mt-28">
-              <div className="mb-5">
-                <h2 className="font-display text-3xl font-extrabold tracking-tight">{category.name}</h2>
-                {category.description ? <p className="mt-2 text-sm text-slate-500">{category.description}</p> : null}
-              </div>
-              <div className="space-y-3">
-                {category.items.map((item) => (
-                  <article key={item._id} className="rounded-[1.6rem] border border-slate-200 bg-white p-3 shadow-sm">
-                    <div className="flex gap-3 sm:gap-5">
-                      {item.imageUrl ? (
-                        <img src={item.imageUrl} alt={item.name} loading="lazy" className="h-24 w-24 rounded-[1.2rem] object-cover sm:h-28 sm:w-28" />
-                      ) : (
-                        <div className="h-24 w-24 rounded-[1.2rem] bg-slate-100 sm:h-28 sm:w-28" />
-                      )}
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <h3 className="text-lg font-extrabold tracking-tight text-slate-900 sm:text-xl">{item.name}</h3>
-                            {item.description ? <p className="mt-2 text-sm leading-6 text-slate-500">{item.description}</p> : null}
-                          </div>
-                          <div className="shrink-0 text-right">
-                            <div className="text-lg font-extrabold sm:text-xl" style={{ color: "var(--accent-color)" }}>
-                              {formatPrice(item)}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            </section>
-          ))}
+  return (
+    <header className={`relative overflow-hidden ${theme === "editorial" ? "bg-[#111827]" : "bg-[#101828]"} text-white`}>
+      <div
+        className="absolute inset-0 bg-cover bg-center opacity-35"
+        style={{ backgroundImage: `url(${tenant.coverImageUrl || tenant.logoUrl || ""})` }}
+      />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(16,24,40,0.28),rgba(16,24,40,0.92))]" />
+      <div className="relative mx-auto max-w-6xl px-4 pb-10 pt-10 sm:px-6">
+        <div className="flex items-start gap-4">
+          {tenant.logoUrl ? (
+            <img src={tenant.logoUrl} alt={tenant.businessName} className="h-20 w-20 rounded-[1.5rem] object-cover shadow-soft sm:h-24 sm:w-24" />
+          ) : null}
+          <div className="min-w-0 flex-1">
+            <h1 className="font-display text-4xl font-extrabold tracking-tight sm:text-6xl">{tenant.businessName}</h1>
+            {tenant.tagline ? <p className="mt-4 max-w-xl text-base text-white/75 sm:text-lg">{tenant.tagline}</p> : null}
+            <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/65">
+              {tenant.address ? <span>{tenant.address}</span> : null}
+              {tenant.phone ? <span>{tenant.phone}</span> : null}
+            </div>
+          </div>
         </div>
-      </main>
+
+        <div className="mt-8">
+          <SocialBar socials={socials} dark={isDark} />
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function CategoryGrid({ categories, tenant, slug, theme }) {
+  const gridClass =
+    theme === "minimal"
+      ? "grid gap-4 sm:grid-cols-2"
+      : "grid gap-4 md:grid-cols-2 xl:grid-cols-3";
+
+  return (
+    <div className={gridClass}>
+      {categories.map((category) => (
+        <Link
+          key={category._id}
+          to={`/menu/${slug}/category/${category._id}`}
+          className={`group relative overflow-hidden rounded-[2rem] text-left shadow-soft ${
+            theme === "minimal" ? "border border-slate-200 bg-white" : "bg-slate-900"
+          }`}
+        >
+          {getCategoryImage(category, tenant) ? (
+            <img
+              src={getCategoryImage(category, tenant)}
+              alt={category.name}
+              loading="lazy"
+              className="h-56 w-full object-cover transition duration-500 group-hover:scale-105"
+            />
+          ) : (
+            <div className={`h-56 w-full ${theme === "minimal" ? "bg-slate-100" : "bg-gradient-to-br from-slate-800 to-slate-600"}`} />
+          )}
+          <div className={`absolute inset-0 ${theme === "minimal" ? "bg-[linear-gradient(180deg,transparent,rgba(15,23,42,0.75))]" : "bg-[linear-gradient(180deg,transparent,rgba(15,23,42,0.88))]"}`} />
+          <div className="absolute inset-x-0 bottom-0 p-5 text-white">
+            <p className="text-xs uppercase tracking-[0.3em] text-white/65">{category.items.length} urun</p>
+            <h2 className="mt-2 font-display text-3xl font-extrabold">{category.name}</h2>
+            {category.description ? <p className="mt-2 text-sm text-white/75">{category.description}</p> : null}
+          </div>
+        </Link>
+      ))}
     </div>
   );
 }
 
-function EditorialTheme({ menu, categories, activeCategory, onSelect }) {
-  const socials = getVisibleSocials(menu.tenant.socialLinks);
-  const firstCategory = categories[0];
-  const firstCategoryImage = firstCategory ? getCategoryImage(firstCategory, menu.tenant) : menu.tenant.coverImageUrl;
+function BackBar({ slug, categories, activeCategoryId }) {
+  return (
+    <div className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/90 backdrop-blur">
+      <div className="mx-auto flex max-w-6xl items-center gap-3 overflow-x-auto px-4 py-4 sm:px-6">
+        <Link to={`/menu/${slug}`} className="shrink-0 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700">
+          Kategoriler
+        </Link>
+        {categories.map((category) => (
+          <Link
+            key={category._id}
+            to={`/menu/${slug}/category/${category._id}`}
+            className={`shrink-0 rounded-full border px-4 py-2 text-sm font-semibold transition ${
+              activeCategoryId === category._id ? "border-transparent text-white" : "border-slate-200 bg-white text-slate-700"
+            }`}
+            style={activeCategoryId === category._id ? { backgroundColor: "var(--accent-color)" } : undefined}
+          >
+            {category.name}
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function DetailHeader({ slug, category }) {
+  return (
+    <div className="mb-6 flex items-center justify-between gap-4">
+      <div>
+        <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Kategori</p>
+        <h2 className="mt-2 font-display text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">{category.name}</h2>
+        {category.description ? <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-500">{category.description}</p> : null}
+      </div>
+      <button
+        type="button"
+        onClick={() => window.location.assign(`/menu/${slug}`)}
+        className="hidden rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 sm:block"
+      >
+        Geri Don
+      </button>
+    </div>
+  );
+}
+
+function ItemList({ items, theme }) {
+  if (theme === "minimal") {
+    return (
+      <div className="space-y-3">
+        {items.map((item) => (
+          <article key={item._id} className="rounded-[1.6rem] border border-slate-200 bg-white p-3 shadow-sm">
+            <div className="flex gap-3 sm:gap-5">
+              {item.imageUrl ? (
+                <img src={item.imageUrl} alt={item.name} loading="lazy" className="h-24 w-24 rounded-[1.2rem] object-cover sm:h-28 sm:w-28" />
+              ) : (
+                <div className="h-24 w-24 rounded-[1.2rem] bg-slate-100 sm:h-28 sm:w-28" />
+              )}
+              <div className="min-w-0 flex-1">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <h3 className="text-lg font-extrabold tracking-tight text-slate-900 sm:text-xl">{item.name}</h3>
+                    {item.description ? <p className="mt-2 text-sm leading-6 text-slate-500">{item.description}</p> : null}
+                  </div>
+                  <div className="shrink-0 text-right text-lg font-extrabold sm:text-xl" style={{ color: "var(--accent-color)" }}>
+                    {formatPrice(item)}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    );
+  }
+
+  if (theme === "editorial") {
+    return (
+      <div className="space-y-3">
+        {items.map((item) => (
+          <article key={item._id} className="rounded-[1.8rem] border border-[#e4d8ca] bg-[#fffdf9] p-4 shadow-sm">
+            <div className="flex gap-4">
+              {item.imageUrl ? (
+                <img src={item.imageUrl} alt={item.name} loading="lazy" className="h-20 w-20 rounded-[1.1rem] object-cover sm:h-24 sm:w-24" />
+              ) : (
+                <div className="h-20 w-20 rounded-[1.1rem] bg-[#efe6da] sm:h-24 sm:w-24" />
+              )}
+              <div className="min-w-0 flex-1">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <h3 className="font-display text-xl font-extrabold tracking-tight text-slate-900">{item.name}</h3>
+                    {item.description ? <p className="mt-2 text-sm leading-6 text-slate-500">{item.description}</p> : null}
+                  </div>
+                  <div className="shrink-0 text-right font-extrabold" style={{ color: "var(--accent-color)" }}>
+                    {formatPrice(item)}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-[#f4efe8] text-[#1f2937]" style={{ "--accent-color": menu.tenant.primaryColor || "#2563eb" }}>
-      <header className="mx-auto max-w-6xl px-4 pb-6 pt-6 sm:px-6 sm:pt-8">
-        <div className="overflow-hidden rounded-[2.4rem] bg-[#111827] text-white shadow-soft">
-          <div className="grid gap-0 lg:grid-cols-[1.1fr_0.9fr]">
-            <div className="p-6 sm:p-8 lg:p-10">
-              <div className="inline-flex rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs uppercase tracking-[0.35em] text-white/70">
-                Editorial Theme
-              </div>
-              <h1 className="mt-6 font-display text-4xl font-extrabold tracking-tight sm:text-6xl">{menu.tenant.businessName}</h1>
-              {menu.tenant.tagline ? <p className="mt-5 max-w-xl text-base leading-7 text-white/75">{menu.tenant.tagline}</p> : null}
-              <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/60">
-                {menu.tenant.address ? <span>{menu.tenant.address}</span> : null}
-                {menu.tenant.phone ? <span>{menu.tenant.phone}</span> : null}
-              </div>
-              <div className="mt-8">
-                <SocialBar socials={socials} dark />
+    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      {items.map((item) => (
+        <article key={item._id} className="overflow-hidden rounded-[2rem] border border-white/70 bg-white shadow-soft">
+          {item.imageUrl ? (
+            <img src={item.imageUrl} alt={item.name} loading="lazy" className="h-52 w-full object-cover" />
+          ) : (
+            <div className="h-52 bg-gradient-to-br from-slate-100 to-slate-200" />
+          )}
+          <div className="p-5">
+            <div className="flex items-start justify-between gap-4">
+              <h3 className="font-display text-2xl font-extrabold text-slate-900">{item.name}</h3>
+              <div className="rounded-full px-4 py-2 text-sm font-bold text-white" style={{ backgroundColor: "var(--accent-color)" }}>
+                {formatPrice(item)}
               </div>
             </div>
-            <div className="relative min-h-[280px]">
-              {firstCategoryImage ? (
-                <img src={firstCategoryImage} alt={menu.tenant.businessName} loading="lazy" className="h-full w-full object-cover" />
-              ) : (
-                <div className="h-full w-full bg-gradient-to-br from-slate-700 to-slate-900" />
-              )}
-              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(17,24,39,0.04),rgba(17,24,39,0.6))]" />
-            </div>
+            {item.description ? <p className="mt-3 text-sm leading-6 text-slate-600">{item.description}</p> : null}
           </div>
-        </div>
-      </header>
-
-      <ScrollTabs categories={categories} activeCategory={activeCategory} onSelect={onSelect} light />
-
-      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-        <div className="space-y-12">
-          {categories.map((category, index) => (
-            <section key={category._id} id={`category-${category._id}`} className="scroll-mt-28">
-              <div className="grid gap-5 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
-                <div className={`${index % 2 === 1 ? "lg:order-2" : ""}`}>
-                  <div className="overflow-hidden rounded-[2rem] bg-slate-900 text-white shadow-soft">
-                    {getCategoryImage(category, menu.tenant) ? (
-                      <img src={getCategoryImage(category, menu.tenant)} alt={category.name} loading="lazy" className="h-64 w-full object-cover" />
-                    ) : (
-                      <div className="h-64 bg-gradient-to-br from-slate-800 to-slate-600" />
-                    )}
-                    <div className="border-t border-white/10 p-5">
-                      <p className="text-xs uppercase tracking-[0.3em] text-white/55">Section {String(index + 1).padStart(2, "0")}</p>
-                      <h2 className="mt-3 font-display text-3xl font-extrabold">{category.name}</h2>
-                      {category.description ? <p className="mt-3 text-sm leading-6 text-white/70">{category.description}</p> : null}
-                    </div>
-                  </div>
-                </div>
-                <div className={`${index % 2 === 1 ? "lg:order-1" : ""}`}>
-                  <div className="space-y-3">
-                    {category.items.map((item) => (
-                      <article key={item._id} className="rounded-[1.8rem] border border-[#e4d8ca] bg-[#fffdf9] p-4 shadow-sm">
-                        <div className="flex gap-4">
-                          {item.imageUrl ? (
-                            <img src={item.imageUrl} alt={item.name} loading="lazy" className="h-20 w-20 rounded-[1.1rem] object-cover sm:h-24 sm:w-24" />
-                          ) : (
-                            <div className="h-20 w-20 rounded-[1.1rem] bg-[#efe6da] sm:h-24 sm:w-24" />
-                          )}
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-start justify-between gap-3">
-                              <div>
-                                <h3 className="font-display text-xl font-extrabold tracking-tight text-slate-900">{item.name}</h3>
-                                {item.description ? <p className="mt-2 text-sm leading-6 text-slate-500">{item.description}</p> : null}
-                              </div>
-                              <div className="shrink-0 text-right font-extrabold" style={{ color: "var(--accent-color)" }}>
-                                {formatPrice(item)}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </article>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </section>
-          ))}
-        </div>
-      </main>
+        </article>
+      ))}
     </div>
   );
 }
 
 export default function PublicMenu() {
-  const { slug } = useParams();
+  const { slug, categoryId } = useParams();
+  const navigate = useNavigate();
   const [menu, setMenu] = useState(null);
   const [error, setError] = useState("");
-  const [activeCategory, setActiveCategory] = useState("");
 
   useEffect(() => {
     fetch(`${API_URL}/public/menu/${slug}`)
@@ -386,50 +313,21 @@ export default function PublicMenu() {
         }
         return result.data;
       })
-      .then((data) => {
-        setMenu(data);
-        setActiveCategory(data.categories[0]?._id || "");
-      })
+      .then((data) => setMenu(data))
       .catch((loadError) => setError(loadError.message));
   }, [slug]);
 
-  useEffect(() => {
-    if (!menu?.categories?.length) {
-      return undefined;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries.find((entry) => entry.isIntersecting);
-        if (visible) {
-          setActiveCategory(visible.target.id.replace("category-", ""));
-        }
-      },
-      { rootMargin: "-30% 0px -55% 0px" }
-    );
-
-    menu.categories.forEach((category) => {
-      const element = document.getElementById(`category-${category._id}`);
-      if (element) {
-        observer.observe(element);
-      }
-    });
-
-    return () => observer.disconnect();
-  }, [menu]);
-
   const categories = useMemo(() => (menu?.categories || []).filter((category) => category.items.length), [menu]);
+  const selectedCategory = useMemo(
+    () => categories.find((category) => category._id === categoryId) || null,
+    [categories, categoryId]
+  );
 
   useEffect(() => {
-    if (categories.length && !categories.find((category) => category._id === activeCategory)) {
-      setActiveCategory(categories[0]._id);
+    if (categoryId && categories.length && !selectedCategory) {
+      navigate(`/menu/${slug}`, { replace: true });
     }
-  }, [categories, activeCategory]);
-
-  const scrollToCategory = (categoryId) => {
-    document.getElementById(`category-${categoryId}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
-    setActiveCategory(categoryId);
-  };
+  }, [categoryId, categories, navigate, selectedCategory, slug]);
 
   if (error) {
     return (
@@ -462,13 +360,34 @@ export default function PublicMenu() {
   }
 
   const theme = menu.tenant.theme || "showcase";
+  const socials = getVisibleSocials(menu.tenant.socialLinks);
+  const pageBackground =
+    theme === "minimal" ? "bg-[#f8fafc]" : theme === "editorial" ? "bg-[#f4efe8]" : "bg-[#f8f3ec]";
 
   return (
-    <>
-      {theme === "minimal" ? <MinimalTheme menu={menu} categories={categories} activeCategory={activeCategory} onSelect={scrollToCategory} /> : null}
-      {theme === "editorial" ? <EditorialTheme menu={menu} categories={categories} activeCategory={activeCategory} onSelect={scrollToCategory} /> : null}
-      {theme === "showcase" ? <ShowcaseTheme menu={menu} categories={categories} activeCategory={activeCategory} onSelect={scrollToCategory} /> : null}
+    <div className={`min-h-screen ${pageBackground} text-slate-900`} style={{ "--accent-color": menu.tenant.primaryColor || "#2563eb" }}>
+      <PageHeader tenant={menu.tenant} socials={socials} theme={theme} />
+
+      {selectedCategory ? <BackBar slug={slug} categories={categories} activeCategoryId={selectedCategory._id} /> : null}
+
+      <main className={`mx-auto px-4 py-8 sm:px-6 ${theme === "minimal" ? "max-w-5xl" : "max-w-6xl"}`}>
+        {selectedCategory ? (
+          <section>
+            <DetailHeader slug={slug} category={selectedCategory} />
+            <ItemList items={selectedCategory.items} theme={theme} />
+          </section>
+        ) : (
+          <section>
+            <div className="mb-6">
+              <h2 className="font-display text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">Kategoriler</h2>
+              <p className="mt-3 text-sm text-slate-500">Urunleri gormek icin bir kategori sec.</p>
+            </div>
+            <CategoryGrid categories={categories} tenant={menu.tenant} slug={slug} theme={theme} />
+          </section>
+        )}
+      </main>
+
       <footer className="px-4 pb-8 pt-3 text-center text-xs uppercase tracking-[0.28em] text-slate-400">Powered by QRMenu</footer>
-    </>
+    </div>
   );
 }
