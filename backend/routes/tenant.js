@@ -35,11 +35,11 @@ router.get("/me", async (req, res) => {
 
 router.put("/me", async (req, res) => {
   try {
-    const { businessName, phone, address, primaryColor } = req.body;
+    const { businessName, phone, address, primaryColor, tagline, theme, socialLinks } = req.body;
 
     const tenant = await Tenant.findByIdAndUpdate(
       req.tenantId,
-      { businessName, phone, address, primaryColor },
+      { businessName, phone, address, primaryColor, tagline, theme, socialLinks },
       { new: true, runValidators: true }
     ).select("-password");
 
@@ -61,6 +61,21 @@ router.post("/me/logo", upload.single("logo"), async (req, res) => {
     return res.json(createResponse(true, "Logo yüklendi.", { tenant }));
   } catch (error) {
     return res.status(500).json(createResponse(false, "Logo yüklenemedi.", { error: error.message }));
+  }
+});
+
+router.post("/me/cover", upload.single("cover"), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json(createResponse(false, "Kapak gorseli gerekli.", {}));
+    }
+
+    const coverImageUrl = buildFileUrl(req, req.file.filename);
+    const tenant = await Tenant.findByIdAndUpdate(req.tenantId, { coverImageUrl }, { new: true }).select("-password");
+
+    return res.json(createResponse(true, "Kapak gorseli yuklendi.", { tenant }));
+  } catch (error) {
+    return res.status(500).json(createResponse(false, "Kapak gorseli yuklenemedi.", { error: error.message }));
   }
 });
 

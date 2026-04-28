@@ -1,5 +1,16 @@
 const mongoose = require("mongoose");
 
+const socialLinkSchema = new mongoose.Schema(
+  {
+    instagram: { type: String, default: "", trim: true },
+    facebook: { type: String, default: "", trim: true },
+    tiktok: { type: String, default: "", trim: true },
+    website: { type: String, default: "", trim: true },
+    whatsapp: { type: String, default: "", trim: true },
+  },
+  { _id: false }
+);
+
 const tenantSchema = new mongoose.Schema(
   {
     businessName: {
@@ -42,9 +53,27 @@ const tenantSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    coverImageUrl: {
+      type: String,
+      default: "",
+    },
+    tagline: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    theme: {
+      type: String,
+      enum: ["showcase", "minimal", "editorial"],
+      default: "showcase",
+    },
     primaryColor: {
       type: String,
       default: "#2563eb",
+    },
+    socialLinks: {
+      type: socialLinkSchema,
+      default: () => ({}),
     },
   },
   { timestamps: true }

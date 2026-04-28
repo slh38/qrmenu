@@ -9,6 +9,22 @@ const router = express.Router();
 const signToken = (tenantId) =>
   jwt.sign({ tenantId }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
+const serializeTenant = (tenant) => ({
+  _id: tenant._id,
+  businessName: tenant.businessName,
+  slug: tenant.slug,
+  email: tenant.email,
+  ownerName: tenant.ownerName,
+  phone: tenant.phone,
+  address: tenant.address,
+  logoUrl: tenant.logoUrl,
+  coverImageUrl: tenant.coverImageUrl,
+  tagline: tenant.tagline,
+  theme: tenant.theme,
+  primaryColor: tenant.primaryColor,
+  socialLinks: tenant.socialLinks,
+});
+
 router.post("/register", async (req, res) => {
   try {
     const { businessName, ownerName, email, password, phone, address } = req.body;
@@ -40,17 +56,7 @@ router.post("/register", async (req, res) => {
     return res.status(201).json(
       createResponse(true, "Kayıt başarılı.", {
         token,
-        tenant: {
-          _id: tenant._id,
-          businessName: tenant.businessName,
-          slug: tenant.slug,
-          email: tenant.email,
-          ownerName: tenant.ownerName,
-          phone: tenant.phone,
-          address: tenant.address,
-          logoUrl: tenant.logoUrl,
-          primaryColor: tenant.primaryColor,
-        },
+        tenant: serializeTenant(tenant),
       })
     );
   } catch (error) {
@@ -81,17 +87,7 @@ router.post("/login", async (req, res) => {
     return res.json(
       createResponse(true, "Giriş başarılı.", {
         token,
-        tenant: {
-          _id: tenant._id,
-          businessName: tenant.businessName,
-          slug: tenant.slug,
-          email: tenant.email,
-          ownerName: tenant.ownerName,
-          phone: tenant.phone,
-          address: tenant.address,
-          logoUrl: tenant.logoUrl,
-          primaryColor: tenant.primaryColor,
-        },
+        tenant: serializeTenant(tenant),
       })
     );
   } catch (error) {

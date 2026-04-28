@@ -9,7 +9,7 @@ const router = express.Router();
 router.get("/menu/:slug", async (req, res) => {
   try {
     const tenant = await Tenant.findOne({ slug: req.params.slug }).select(
-      "businessName logoUrl primaryColor address phone slug"
+      "businessName logoUrl coverImageUrl tagline theme primaryColor address phone slug socialLinks"
     );
 
     if (!tenant) {
