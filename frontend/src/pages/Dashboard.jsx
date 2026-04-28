@@ -32,6 +32,11 @@ export default function Dashboard() {
   const [form, setForm] = useState(initialForm);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [uploading, setUploading] = useState({ logo: false, cover: false });
+  const [selectedFiles, setSelectedFiles] = useState({
+    logo: { name: "", preview: "" },
+    cover: { name: "", preview: "" },
+  });
 
   const syncTenant = (nextTenant) => {
     setTenant(nextTenant);
@@ -88,6 +93,16 @@ export default function Dashboard() {
       return;
     }
 
+    const assetKey = fieldName === "logo" ? "logo" : "cover";
+    const preview = URL.createObjectURL(file);
+    setSelectedFiles((current) => ({
+      ...current,
+      [assetKey]: { name: file.name, preview },
+    }));
+    setUploading((current) => ({ ...current, [assetKey]: true }));
+    setMessage("");
+    setError("");
+
     const payload = new FormData();
     payload.append(fieldName, file);
 
@@ -100,6 +115,8 @@ export default function Dashboard() {
       setMessage(successMessage);
     } catch (uploadError) {
       setError(uploadError.message);
+    } finally {
+      setUploading((current) => ({ ...current, [assetKey]: false }));
     }
   };
 
@@ -198,25 +215,64 @@ export default function Dashboard() {
                 className="h-10 w-14 cursor-pointer rounded border-0 bg-transparent"
               />
             </label>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <label className="flex cursor-pointer items-center justify-center rounded-2xl border border-dashed border-blue-200 px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-blue-50">
-                Logo Yukle
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(event) => uploadAsset(event, "logo", "/tenant/me/logo", "Logo guncellendi.")}
-                  className="hidden"
-                />
-              </label>
-              <label className="flex cursor-pointer items-center justify-center rounded-2xl border border-dashed border-blue-200 px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-blue-50">
-                Kapak Yukle
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(event) => uploadAsset(event, "cover", "/tenant/me/cover", "Kapak gorseli guncellendi.")}
-                  className="hidden"
-                />
-              </label>
+            <div className="grid gap-4 md:col-span-2 sm:grid-cols-2">
+              <div className="rounded-[1.5rem] border border-blue-100 bg-white p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-slate-900">Logo</p>
+                    <p className="mt-1 truncate text-xs text-slate-500">
+                      {selectedFiles.logo.name || (tenant?.logoUrl ? "Mevcut logo yuklu" : "Henuz logo secilmedi")}
+                    </p>
+                  </div>
+                  <label className="cursor-pointer rounded-2xl bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700 transition hover:bg-blue-100">
+                    {uploading.logo ? "Yukleniyor..." : "Logo Sec"}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(event) => uploadAsset(event, "logo", "/tenant/me/logo", "Logo guncellendi.")}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+                <div className="mt-4 overflow-hidden rounded-[1.25rem] border border-slate-100 bg-slate-50">
+                  {selectedFiles.logo.preview || tenant?.logoUrl ? (
+                    <img src={selectedFiles.logo.preview || tenant.logoUrl} alt="Logo preview" className="h-40 w-full object-cover" />
+                  ) : (
+                    <div className="flex h-40 items-center justify-center text-sm text-slate-400">Logo onizlemesi burada gorunur</div>
+                  )}
+                </div>
+              </div>
+
+              <div className="rounded-[1.5rem] border border-blue-100 bg-white p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-slate-900">Kapak Gorseli</p>
+                    <p className="mt-1 truncate text-xs text-slate-500">
+                      {selectedFiles.cover.name || (tenant?.coverImageUrl ? "Mevcut kapak yuklu" : "Henuz kapak secilmedi")}
+                    </p>
+                  </div>
+                  <label className="cursor-pointer rounded-2xl bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700 transition hover:bg-blue-100">
+                    {uploading.cover ? "Yukleniyor..." : "Kapak Sec"}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(event) => uploadAsset(event, "cover", "/tenant/me/cover", "Kapak gorseli guncellendi.")}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+                <div className="mt-4 overflow-hidden rounded-[1.25rem] border border-slate-100 bg-slate-50">
+                  {selectedFiles.cover.preview || tenant?.coverImageUrl ? (
+                    <img
+                      src={selectedFiles.cover.preview || tenant.coverImageUrl}
+                      alt="Cover preview"
+                      className="h-40 w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-40 items-center justify-center text-sm text-slate-400">Kapak onizlemesi burada gorunur</div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </section>
