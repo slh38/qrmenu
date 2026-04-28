@@ -9,6 +9,7 @@ const initialForm = {
   primaryColor: "#2563eb",
   tagline: "",
   theme: "showcase",
+  logoEffectEnabled: true,
   socialLinks: {
     instagram: "",
     facebook: "",
@@ -56,6 +57,7 @@ export default function Dashboard() {
         primaryColor: nextTenant.primaryColor || "#2563eb",
         tagline: nextTenant.tagline || "",
         theme: nextTenant.theme || "showcase",
+        logoEffectEnabled: nextTenant.logoEffectEnabled !== false,
         socialLinks: {
           ...initialForm.socialLinks,
           ...(nextTenant.socialLinks || {}),
@@ -214,6 +216,14 @@ export default function Dashboard() {
                 onChange={(event) => setForm({ ...form, primaryColor: event.target.value })}
                 className="h-10 w-14 cursor-pointer rounded border-0 bg-transparent"
               />
+            </label>
+            <label className="flex items-center gap-3 rounded-2xl border border-blue-100 bg-white px-4 py-3 text-sm md:col-span-1">
+              <input
+                type="checkbox"
+                checked={form.logoEffectEnabled}
+                onChange={(event) => setForm({ ...form, logoEffectEnabled: event.target.checked })}
+              />
+              Logo 3 boyutlu efekt kullan
             </label>
             <div className="grid gap-4 md:col-span-2 sm:grid-cols-2">
               <div className="rounded-[1.5rem] border border-blue-100 bg-white p-4">

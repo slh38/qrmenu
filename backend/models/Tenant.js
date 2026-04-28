@@ -57,6 +57,10 @@ const tenantSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    logoEffectEnabled: {
+      type: Boolean,
+      default: true,
+    },
     tagline: {
       type: String,
       default: "",

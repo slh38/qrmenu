@@ -44,7 +44,7 @@ function getVisibleSocials(socialLinks = {}) {
 }
 
 function getCategoryImage(category, tenant) {
-  return category.items.find((item) => item.imageUrl)?.imageUrl || tenant.coverImageUrl || tenant.logoUrl || "";
+  return category.imageUrl || category.items.find((item) => item.imageUrl)?.imageUrl || tenant.coverImageUrl || tenant.logoUrl || "";
 }
 
 function formatPrice(item) {
@@ -76,28 +76,80 @@ function SocialBar({ socials, dark = false }) {
   );
 }
 
-function PageHeader({ tenant, socials, theme }) {
+function ContactIcon({ dark = false }) {
+  return (
+    <span
+      className={`inline-flex h-12 w-12 items-center justify-center rounded-2xl border transition ${
+        dark ? "border-white/10 bg-white/10 text-white hover:bg-white/15" : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
+      }`}
+    >
+      <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
+        <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v13a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 18.5v-13Zm2.2.3v.3l5.8 4.1 5.8-4.1v-.3H6.2Zm11.6 2.9-5.2 3.7a1 1 0 0 1-1.2 0L6.2 8.7v9.8c0 .2.1.3.3.3h11c.2 0 .3-.1.3-.3V8.7Z" />
+      </svg>
+    </span>
+  );
+}
+
+function LogoBadge({ tenant, dark = false }) {
+  if (!tenant.logoUrl) {
+    return null;
+  }
+
+  const effectClass = tenant.logoEffectEnabled !== false
+    ? dark
+      ? "shadow-[0_22px_70px_rgba(0,0,0,0.45)] ring-1 ring-white/10"
+      : "shadow-[0_22px_60px_rgba(37,99,235,0.22)] ring-1 ring-slate-200"
+    : dark
+      ? "shadow-soft ring-1 ring-white/10"
+      : "shadow-sm ring-1 ring-slate-200";
+
+  return (
+    <div className={`mx-auto mb-6 flex h-28 w-28 items-center justify-center rounded-[2rem] bg-white/95 p-2 backdrop-blur sm:h-32 sm:w-32 ${effectClass}`}>
+      <img src={tenant.logoUrl} alt={tenant.businessName} className="h-full w-full rounded-[1.5rem] object-cover" />
+    </div>
+  );
+}
+
+function PageHeader({ tenant, socials, theme, onContactClick }) {
   const isDark = theme !== "minimal";
+  const combinedSocials = [
+    ...socials,
+    {
+      key: "contact",
+      href: "#contact",
+      label: "Iletisim",
+      icon: null,
+    },
+  ];
 
   if (theme === "minimal") {
     return (
       <header className="border-b border-slate-200 bg-white">
         <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
-          <div className="flex items-start gap-4">
-            {tenant.logoUrl ? (
-              <img src={tenant.logoUrl} alt={tenant.businessName} className="h-20 w-20 rounded-[1.5rem] object-cover shadow-sm" />
-            ) : null}
-            <div className="min-w-0 flex-1">
-              <h1 className="font-display text-4xl font-extrabold tracking-tight text-slate-900">{tenant.businessName}</h1>
-              {tenant.tagline ? <p className="mt-3 text-sm leading-6 text-slate-600">{tenant.tagline}</p> : null}
-              <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm text-slate-500">
-                {tenant.address ? <span>{tenant.address}</span> : null}
-                {tenant.phone ? <span>{tenant.phone}</span> : null}
-              </div>
-            </div>
+          <LogoBadge tenant={tenant} />
+          <div className="min-w-0 text-center">
+            <h1 className="font-display text-4xl font-extrabold tracking-tight text-slate-900">{tenant.businessName}</h1>
+            {tenant.tagline ? <p className="mt-3 text-sm leading-6 text-slate-600">{tenant.tagline}</p> : null}
           </div>
-          <div className="mt-5">
-            <SocialBar socials={socials} />
+          <div className="mt-5 flex flex-wrap justify-center gap-3">
+            {combinedSocials.map((social) =>
+              social.key === "contact" ? (
+                <button key={social.key} type="button" onClick={onContactClick}>
+                  <ContactIcon />
+                </button>
+              ) : (
+                <a
+                  key={social.key}
+                  href={social.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={social.label}
+                  className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-700 transition hover:border-slate-300"
+                >
+                  <SocialIcon icon={social.icon} />
+                </a>
+              )
+            )}
           </div>
         </div>
       </header>
@@ -112,22 +164,31 @@ function PageHeader({ tenant, socials, theme }) {
       />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(16,24,40,0.28),rgba(16,24,40,0.92))]" />
       <div className="relative mx-auto max-w-6xl px-4 pb-10 pt-10 sm:px-6">
-        <div className="flex items-start gap-4">
-          {tenant.logoUrl ? (
-            <img src={tenant.logoUrl} alt={tenant.businessName} className="h-20 w-20 rounded-[1.5rem] object-cover shadow-soft sm:h-24 sm:w-24" />
-          ) : null}
-          <div className="min-w-0 flex-1">
-            <h1 className="font-display text-4xl font-extrabold tracking-tight sm:text-6xl">{tenant.businessName}</h1>
-            {tenant.tagline ? <p className="mt-4 max-w-xl text-base text-white/75 sm:text-lg">{tenant.tagline}</p> : null}
-            <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/65">
-              {tenant.address ? <span>{tenant.address}</span> : null}
-              {tenant.phone ? <span>{tenant.phone}</span> : null}
-            </div>
-          </div>
+        <LogoBadge tenant={tenant} dark />
+        <div className="mx-auto min-w-0 max-w-3xl text-center">
+          <h1 className="font-display text-4xl font-extrabold tracking-tight sm:text-6xl">{tenant.businessName}</h1>
+          {tenant.tagline ? <p className="mt-4 text-base text-white/75 sm:text-lg">{tenant.tagline}</p> : null}
         </div>
 
-        <div className="mt-8">
-          <SocialBar socials={socials} dark={isDark} />
+        <div className="mt-8 flex flex-wrap justify-center gap-3">
+          {combinedSocials.map((social) =>
+            social.key === "contact" ? (
+              <button key={social.key} type="button" onClick={onContactClick}>
+                <ContactIcon dark={isDark} />
+              </button>
+            ) : (
+              <a
+                key={social.key}
+                href={social.href}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={social.label}
+                className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/10 text-white transition hover:bg-white/15"
+              >
+                <SocialIcon icon={social.icon} />
+              </a>
+            )
+          )}
         </div>
       </div>
     </header>
@@ -303,6 +364,7 @@ export default function PublicMenu() {
   const navigate = useNavigate();
   const [menu, setMenu] = useState(null);
   const [error, setError] = useState("");
+  const contactSectionId = "contact";
 
   useEffect(() => {
     fetch(`${API_URL}/public/menu/${slug}`)
@@ -364,9 +426,13 @@ export default function PublicMenu() {
   const pageBackground =
     theme === "minimal" ? "bg-[#f8fafc]" : theme === "editorial" ? "bg-[#f4efe8]" : "bg-[#f8f3ec]";
 
+  const scrollToContact = () => {
+    document.getElementById(contactSectionId)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   return (
     <div className={`min-h-screen ${pageBackground} text-slate-900`} style={{ "--accent-color": menu.tenant.primaryColor || "#2563eb" }}>
-      <PageHeader tenant={menu.tenant} socials={socials} theme={theme} />
+      <PageHeader tenant={menu.tenant} socials={socials} theme={theme} onContactClick={scrollToContact} />
 
       {selectedCategory ? <BackBar slug={slug} categories={categories} activeCategoryId={selectedCategory._id} /> : null}
 
@@ -386,6 +452,22 @@ export default function PublicMenu() {
           </section>
         )}
       </main>
+
+      <section id={contactSectionId} className="mx-auto max-w-6xl px-4 pb-8 sm:px-6">
+        <div className="rounded-[2rem] border border-slate-200 bg-white/80 p-6 shadow-soft backdrop-blur">
+          <h3 className="font-display text-2xl font-extrabold tracking-tight text-slate-900">Iletisim</h3>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <div className="rounded-[1.4rem] bg-slate-50 p-4">
+              <p className="text-xs uppercase tracking-[0.28em] text-slate-400">Telefon</p>
+              <p className="mt-2 text-base font-semibold text-slate-900">{menu.tenant.phone || "Belirtilmedi"}</p>
+            </div>
+            <div className="rounded-[1.4rem] bg-slate-50 p-4">
+              <p className="text-xs uppercase tracking-[0.28em] text-slate-400">Adres</p>
+              <p className="mt-2 text-base font-semibold text-slate-900">{menu.tenant.address || "Belirtilmedi"}</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <footer className="px-4 pb-8 pt-3 text-center text-xs uppercase tracking-[0.28em] text-slate-400">Powered by QRMenu</footer>
     </div>

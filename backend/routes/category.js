@@ -1,7 +1,8 @@
 const express = require("express");
 const Category = require("../models/Category");
 const MenuItem = require("../models/MenuItem");
-const { createResponse } = require("../utils");
+const upload = require("../middleware/upload");
+const { buildFileUrl, createResponse } = require("../utils");
 
 const router = express.Router();
 
@@ -65,6 +66,29 @@ router.put("/:id", async (req, res) => {
     return res.json(createResponse(true, "Kategori güncellendi.", { category }));
   } catch (error) {
     return res.status(500).json(createResponse(false, "Kategori güncellenemedi.", { error: error.message }));
+  }
+});
+
+router.post("/:id/image", upload.single("image"), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json(createResponse(false, "Kategori gorseli gerekli.", {}));
+    }
+
+    const imageUrl = buildFileUrl(req, req.file.filename);
+    const category = await Category.findOneAndUpdate(
+      { _id: req.params.id, tenantId: req.tenantId },
+      { imageUrl },
+      { new: true }
+    );
+
+    if (!category) {
+      return res.status(404).json(createResponse(false, "Kategori bulunamadi.", {}));
+    }
+
+    return res.json(createResponse(true, "Kategori gorseli guncellendi.", { category }));
+  } catch (error) {
+    return res.status(500).json(createResponse(false, "Kategori gorseli yuklenemedi.", { error: error.message }));
   }
 });
 

@@ -35,11 +35,11 @@ router.get("/me", async (req, res) => {
 
 router.put("/me", async (req, res) => {
   try {
-    const { businessName, phone, address, primaryColor, tagline, theme, socialLinks } = req.body;
+    const { businessName, phone, address, primaryColor, tagline, theme, socialLinks, logoEffectEnabled } = req.body;
 
     const tenant = await Tenant.findByIdAndUpdate(
       req.tenantId,
-      { businessName, phone, address, primaryColor, tagline, theme, socialLinks },
+      { businessName, phone, address, primaryColor, tagline, theme, socialLinks, logoEffectEnabled },
       { new: true, runValidators: true }
     ).select("-password");
 

@@ -13,6 +13,8 @@ export default function Categories() {
   const [form, setForm] = useState(initialForm);
   const [editingId, setEditingId] = useState("");
   const [error, setError] = useState("");
+  const [uploadingId, setUploadingId] = useState("");
+  const [selectedPreview, setSelectedPreview] = useState({ categoryId: "", name: "", preview: "" });
 
   const loadCategories = async () => {
     try {
@@ -87,11 +89,31 @@ export default function Categories() {
     }
   };
 
+  const uploadCategoryImage = async (categoryId, file) => {
+    const payload = new FormData();
+    payload.append("image", file);
+
+    setUploadingId(categoryId);
+    setError("");
+
+    try {
+      await request(`/categories/${categoryId}/image`, {
+        method: "POST",
+        body: payload,
+      });
+      await loadCategories();
+    } catch (uploadError) {
+      setError(uploadError.message);
+    } finally {
+      setUploadingId("");
+    }
+  };
+
   return (
     <div className="space-y-6">
       <section className="glass-panel p-6 shadow-soft">
         <h1 className="font-display text-3xl text-ink">Kategoriler</h1>
-        <p className="mt-2 text-sm text-slate-600">Kategori ekle, sirala, pasiflestir veya sil.</p>
+        <p className="mt-2 text-sm text-slate-600">Kategori ekle, sirala, pasiflestir veya kategoriye ozel bir vitrin gorseli yukle.</p>
 
         <form onSubmit={submitForm} className="mt-6 grid gap-4 md:grid-cols-2">
           <input
@@ -144,46 +166,97 @@ export default function Categories() {
       </section>
 
       <section className="grid gap-4">
-        {categories.map((category) => (
-          <article key={category._id} className="glass-panel flex flex-col gap-4 p-5 shadow-soft sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <div className="flex items-center gap-3">
-                <h2 className="font-display text-2xl text-ink">{category.name}</h2>
-                <span className="rounded-full bg-blue-50 px-3 py-1 text-xs text-slate-600">
-                  {category.itemCount} urun
-                </span>
-              </div>
-              <p className="mt-2 text-sm text-slate-600">{category.description || "Aciklama yok"}</p>
-              <p className="mt-3 text-xs uppercase tracking-[0.25em] text-slate-400">Sira: {category.order}</p>
-            </div>
+        {categories.map((category) => {
+          const isPreviewing = selectedPreview.categoryId === category._id && selectedPreview.preview;
+          const previewImage = isPreviewing ? selectedPreview.preview : category.imageUrl;
 
-            <div className="flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={() => toggleActive(category)}
-                className={`rounded-2xl px-4 py-2 text-sm font-semibold ${
-                  category.isActive ? "bg-blue-100 text-blue-800" : "bg-slate-200 text-slate-700"
-                }`}
-              >
-                {category.isActive ? "Aktif" : "Pasif"}
-              </button>
-              <button
-                type="button"
-                onClick={() => startEdit(category)}
-                className="rounded-2xl border border-blue-200 px-4 py-2 text-sm font-semibold text-slate-700"
-              >
-                Duzenle
-              </button>
-              <button
-                type="button"
-                onClick={() => removeCategory(category._id)}
-                className="rounded-2xl bg-red-50 px-4 py-2 text-sm font-semibold text-red-700"
-              >
-                Sil
-              </button>
-            </div>
-          </article>
-        ))}
+          return (
+            <article key={category._id} className="glass-panel overflow-hidden shadow-soft">
+              <div className="grid gap-0 md:grid-cols-[280px_1fr]">
+                <div className="relative min-h-[220px] bg-slate-100">
+                  {previewImage ? (
+                    <img src={previewImage} alt={category.name} className="h-full w-full object-cover" />
+                  ) : (
+                    <div className="flex h-full min-h-[220px] items-center justify-center text-sm text-slate-400">
+                      Kategori gorseli yok
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent,rgba(15,23,42,0.55))]" />
+                  <div className="absolute inset-x-0 bottom-0 p-4 text-white">
+                    <p className="text-xs uppercase tracking-[0.28em] text-white/70">{category.itemCount} urun</p>
+                    <h2 className="mt-2 font-display text-3xl font-extrabold">{category.name}</h2>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-4 p-5">
+                  <div>
+                    <p className="text-sm text-slate-600">{category.description || "Aciklama yok"}</p>
+                    <p className="mt-3 text-xs uppercase tracking-[0.25em] text-slate-400">Sira: {category.order}</p>
+                  </div>
+
+                  <div className="rounded-[1.35rem] border border-blue-100 bg-blue-50/50 p-4">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <p className="text-sm font-semibold text-slate-900">Kategori arka plan gorseli</p>
+                        <p className="mt-1 text-xs text-slate-500">
+                          {isPreviewing ? selectedPreview.name : category.imageUrl ? "Mevcut gorsel yuklu" : "Henuz gorsel secilmedi"}
+                        </p>
+                      </div>
+                      <label className="cursor-pointer rounded-2xl bg-white px-4 py-2 text-sm font-semibold text-blue-700 shadow-sm transition hover:bg-blue-100">
+                        {uploadingId === category._id ? "Yukleniyor..." : "Gorsel Sec"}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(event) => {
+                            const file = event.target.files?.[0];
+                            if (!file) {
+                              return;
+                            }
+
+                            const preview = URL.createObjectURL(file);
+                            setSelectedPreview({
+                              categoryId: category._id,
+                              name: file.name,
+                              preview,
+                            });
+                            uploadCategoryImage(category._id, file);
+                          }}
+                          className="hidden"
+                        />
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => toggleActive(category)}
+                      className={`rounded-2xl px-4 py-2 text-sm font-semibold ${
+                        category.isActive ? "bg-blue-100 text-blue-800" : "bg-slate-200 text-slate-700"
+                      }`}
+                    >
+                      {category.isActive ? "Aktif" : "Pasif"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => startEdit(category)}
+                      className="rounded-2xl border border-blue-200 px-4 py-2 text-sm font-semibold text-slate-700"
+                    >
+                      Duzenle
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => removeCategory(category._id)}
+                      className="rounded-2xl bg-red-50 px-4 py-2 text-sm font-semibold text-red-700"
+                    >
+                      Sil
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </article>
+          );
+        })}
       </section>
     </div>
   );
