@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
+import Landing from "./pages/Landing";
 import Categories from "./pages/Categories";
 import Login from "./pages/Login";
 import MenuItems from "./pages/MenuItems";
@@ -36,12 +37,12 @@ function ProtectedRoute({ children }) {
 
 function HomeRoute() {
   const tenantSubdomain = getTenantSubdomain(window.location.hostname);
-  return tenantSubdomain ? <PublicMenu forcedSlug={tenantSubdomain} /> : <Navigate to="/dashboard" replace />;
+  return tenantSubdomain ? <PublicMenu forcedSlug={tenantSubdomain} /> : <Landing />;
 }
 
 function CategoryRoute() {
   const tenantSubdomain = getTenantSubdomain(window.location.hostname);
-  return tenantSubdomain ? <PublicMenu forcedSlug={tenantSubdomain} /> : <Navigate to="/dashboard" replace />;
+  return tenantSubdomain ? <PublicMenu forcedSlug={tenantSubdomain} /> : <Navigate to="/" replace />;
 }
 
 export default function App() {
