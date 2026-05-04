@@ -51,31 +51,6 @@ function formatPrice(item) {
   return `${item.price} ${item.currency}`;
 }
 
-function SocialBar({ socials, dark = false }) {
-  if (!socials.length) {
-    return null;
-  }
-
-  return (
-    <div className="flex flex-wrap items-center gap-3">
-      {socials.map((social) => (
-        <a
-          key={social.key}
-          href={social.href}
-          target="_blank"
-          rel="noreferrer"
-          aria-label={social.label}
-          className={`inline-flex h-12 w-12 items-center justify-center rounded-2xl border transition ${
-            dark ? "border-white/10 bg-white/10 text-white hover:bg-white/15" : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
-          }`}
-        >
-          <SocialIcon icon={social.icon} />
-        </a>
-      ))}
-    </div>
-  );
-}
-
 function ContactIcon({ dark = false }) {
   return (
     <span
@@ -95,13 +70,14 @@ function LogoBadge({ tenant, dark = false }) {
     return null;
   }
 
-  const effectClass = tenant.logoEffectEnabled !== false
-    ? dark
-      ? "shadow-[0_22px_70px_rgba(0,0,0,0.45)] ring-1 ring-white/10"
-      : "shadow-[0_22px_60px_rgba(37,99,235,0.22)] ring-1 ring-slate-200"
-    : dark
-      ? "shadow-soft ring-1 ring-white/10"
-      : "shadow-sm ring-1 ring-slate-200";
+  const effectClass =
+    tenant.logoEffectEnabled !== false
+      ? dark
+        ? "shadow-[0_22px_70px_rgba(0,0,0,0.45)] ring-1 ring-white/10"
+        : "shadow-[0_22px_60px_rgba(37,99,235,0.22)] ring-1 ring-slate-200"
+      : dark
+        ? "shadow-soft ring-1 ring-white/10"
+        : "shadow-sm ring-1 ring-slate-200";
 
   return (
     <div className={`mx-auto mb-6 flex h-28 w-28 items-center justify-center rounded-[2rem] bg-white/95 p-2 backdrop-blur sm:h-32 sm:w-32 ${effectClass}`}>
@@ -112,15 +88,7 @@ function LogoBadge({ tenant, dark = false }) {
 
 function PageHeader({ tenant, socials, theme, onContactClick }) {
   const isDark = theme !== "minimal";
-  const combinedSocials = [
-    ...socials,
-    {
-      key: "contact",
-      href: "#contact",
-      label: "Iletisim",
-      icon: null,
-    },
-  ];
+  const combinedSocials = [...socials, { key: "contact", href: "#contact", label: "Iletisim", icon: null }];
 
   if (theme === "minimal") {
     return (
@@ -158,10 +126,7 @@ function PageHeader({ tenant, socials, theme, onContactClick }) {
 
   return (
     <header className={`relative overflow-hidden ${theme === "editorial" ? "bg-[#111827]" : "bg-[#101828]"} text-white`}>
-      <div
-        className="absolute inset-0 bg-cover bg-center opacity-35"
-        style={{ backgroundImage: `url(${tenant.coverImageUrl || tenant.logoUrl || ""})` }}
-      />
+      <div className="absolute inset-0 bg-cover bg-center opacity-35" style={{ backgroundImage: `url(${tenant.coverImageUrl || tenant.logoUrl || ""})` }} />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(16,24,40,0.28),rgba(16,24,40,0.92))]" />
       <div className="relative mx-auto max-w-6xl px-4 pb-10 pt-10 sm:px-6">
         <LogoBadge tenant={tenant} dark />
@@ -169,7 +134,6 @@ function PageHeader({ tenant, socials, theme, onContactClick }) {
           <h1 className="font-display text-4xl font-extrabold tracking-tight sm:text-6xl">{tenant.businessName}</h1>
           {tenant.tagline ? <p className="mt-4 text-base text-white/75 sm:text-lg">{tenant.tagline}</p> : null}
         </div>
-
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           {combinedSocials.map((social) =>
             social.key === "contact" ? (
@@ -195,18 +159,15 @@ function PageHeader({ tenant, socials, theme, onContactClick }) {
   );
 }
 
-function CategoryGrid({ categories, tenant, slug, theme }) {
-  const gridClass =
-    theme === "minimal"
-      ? "grid gap-4 sm:grid-cols-2"
-      : "grid gap-4 md:grid-cols-2 xl:grid-cols-3";
+function CategoryGrid({ categories, tenant, categoryBasePath, theme }) {
+  const gridClass = theme === "minimal" ? "grid gap-4 sm:grid-cols-2" : "grid gap-4 md:grid-cols-2 xl:grid-cols-3";
 
   return (
     <div className={gridClass}>
       {categories.map((category) => (
         <Link
           key={category._id}
-          to={`/menu/${slug}/category/${category._id}`}
+          to={`${categoryBasePath}/${category._id}`}
           className={`group relative overflow-hidden rounded-[2rem] text-left shadow-soft ${
             theme === "minimal" ? "border border-slate-200 bg-white" : "bg-slate-900"
           }`}
@@ -233,17 +194,17 @@ function CategoryGrid({ categories, tenant, slug, theme }) {
   );
 }
 
-function BackBar({ slug, categories, activeCategoryId }) {
+function BackBar({ homePath, categoryBasePath, categories, activeCategoryId }) {
   return (
     <div className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center gap-3 overflow-x-auto px-4 py-4 sm:px-6">
-        <Link to={`/menu/${slug}`} className="shrink-0 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700">
+        <Link to={homePath} className="shrink-0 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700">
           Kategoriler
         </Link>
         {categories.map((category) => (
           <Link
             key={category._id}
-            to={`/menu/${slug}/category/${category._id}`}
+            to={`${categoryBasePath}/${category._id}`}
             className={`shrink-0 rounded-full border px-4 py-2 text-sm font-semibold transition ${
               activeCategoryId === category._id ? "border-transparent text-white" : "border-slate-200 bg-white text-slate-700"
             }`}
@@ -257,7 +218,7 @@ function BackBar({ slug, categories, activeCategoryId }) {
   );
 }
 
-function DetailHeader({ slug, category }) {
+function DetailHeader({ homePath, category }) {
   return (
     <div className="mb-6 flex items-center justify-between gap-4">
       <div>
@@ -267,7 +228,7 @@ function DetailHeader({ slug, category }) {
       </div>
       <button
         type="button"
-        onClick={() => window.location.assign(`/menu/${slug}`)}
+        onClick={() => window.location.assign(homePath)}
         className="hidden rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 sm:block"
       >
         Geri Don
@@ -359,15 +320,18 @@ function ItemList({ items, theme }) {
   );
 }
 
-export default function PublicMenu() {
+export default function PublicMenu({ forcedSlug = "" }) {
   const { slug, categoryId } = useParams();
   const navigate = useNavigate();
   const [menu, setMenu] = useState(null);
   const [error, setError] = useState("");
   const contactSectionId = "contact";
+  const resolvedSlug = forcedSlug || slug;
+  const homePath = forcedSlug ? "/" : `/menu/${resolvedSlug}`;
+  const categoryBasePath = forcedSlug ? "/category" : `/menu/${resolvedSlug}/category`;
 
   useEffect(() => {
-    fetch(`${API_URL}/public/menu/${slug}`)
+    fetch(`${API_URL}/public/menu/${resolvedSlug}`)
       .then(async (response) => {
         const result = await response.json();
         if (!response.ok || !result.success) {
@@ -377,19 +341,16 @@ export default function PublicMenu() {
       })
       .then((data) => setMenu(data))
       .catch((loadError) => setError(loadError.message));
-  }, [slug]);
+  }, [resolvedSlug]);
 
   const categories = useMemo(() => (menu?.categories || []).filter((category) => category.items.length), [menu]);
-  const selectedCategory = useMemo(
-    () => categories.find((category) => category._id === categoryId) || null,
-    [categories, categoryId]
-  );
+  const selectedCategory = useMemo(() => categories.find((category) => category._id === categoryId) || null, [categories, categoryId]);
 
   useEffect(() => {
     if (categoryId && categories.length && !selectedCategory) {
-      navigate(`/menu/${slug}`, { replace: true });
+      navigate(homePath, { replace: true });
     }
-  }, [categoryId, categories, navigate, selectedCategory, slug]);
+  }, [categoryId, categories, homePath, navigate, selectedCategory]);
 
   if (error) {
     return (
@@ -423,8 +384,7 @@ export default function PublicMenu() {
 
   const theme = menu.tenant.theme || "showcase";
   const socials = getVisibleSocials(menu.tenant.socialLinks);
-  const pageBackground =
-    theme === "minimal" ? "bg-[#f8fafc]" : theme === "editorial" ? "bg-[#f4efe8]" : "bg-[#f8f3ec]";
+  const pageBackground = theme === "minimal" ? "bg-[#f8fafc]" : theme === "editorial" ? "bg-[#f4efe8]" : "bg-[#f8f3ec]";
 
   const scrollToContact = () => {
     document.getElementById(contactSectionId)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -434,12 +394,14 @@ export default function PublicMenu() {
     <div className={`min-h-screen ${pageBackground} text-slate-900`} style={{ "--accent-color": menu.tenant.primaryColor || "#2563eb" }}>
       <PageHeader tenant={menu.tenant} socials={socials} theme={theme} onContactClick={scrollToContact} />
 
-      {selectedCategory ? <BackBar slug={slug} categories={categories} activeCategoryId={selectedCategory._id} /> : null}
+      {selectedCategory ? (
+        <BackBar homePath={homePath} categoryBasePath={categoryBasePath} categories={categories} activeCategoryId={selectedCategory._id} />
+      ) : null}
 
       <main className={`mx-auto px-4 py-8 sm:px-6 ${theme === "minimal" ? "max-w-5xl" : "max-w-6xl"}`}>
         {selectedCategory ? (
           <section>
-            <DetailHeader slug={slug} category={selectedCategory} />
+            <DetailHeader homePath={homePath} category={selectedCategory} />
             <ItemList items={selectedCategory.items} theme={theme} />
           </section>
         ) : (
@@ -448,7 +410,7 @@ export default function PublicMenu() {
               <h2 className="font-display text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">Kategoriler</h2>
               <p className="mt-3 text-sm text-slate-500">Urunleri gormek icin bir kategori sec.</p>
             </div>
-            <CategoryGrid categories={categories} tenant={menu.tenant} slug={slug} theme={theme} />
+            <CategoryGrid categories={categories} tenant={menu.tenant} categoryBasePath={categoryBasePath} theme={theme} />
           </section>
         )}
       </main>

@@ -1,7 +1,7 @@
 const express = require("express");
 const QRCode = require("qrcode");
 const Tenant = require("../models/Tenant");
-const { createResponse } = require("../utils");
+const { buildTenantPublicUrl, createResponse } = require("../utils");
 
 const router = express.Router();
 
@@ -12,7 +12,7 @@ router.get("/generate", async (req, res) => {
       return res.status(404).json(createResponse(false, "İşletme bulunamadı.", {}));
     }
 
-    const publicUrl = `${process.env.FRONTEND_URL}/menu/${tenant.slug}`;
+    const publicUrl = buildTenantPublicUrl(tenant.slug);
     const qrCode = await QRCode.toDataURL(publicUrl, {
       width: 300,
       margin: 2,

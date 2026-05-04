@@ -1,5 +1,7 @@
 const Tenant = require("./models/Tenant");
 
+const RESERVED_SUBDOMAINS = new Set(["www", "api", "admin", "app", "mail", "ftp", "blog"]);
+
 const createResponse = (success, message, data = {}) => ({
   success,
   message,
@@ -25,7 +27,7 @@ const slugify = (value) =>
 
 const generateUniqueSlug = async (businessName) => {
   const baseSlug = slugify(businessName) || "isletme";
-  let slug = baseSlug;
+  let slug = RESERVED_SUBDOMAINS.has(baseSlug) ? `${baseSlug}-menu` : baseSlug;
   let counter = 2;
 
   while (await Tenant.exists({ slug })) {
@@ -36,10 +38,20 @@ const generateUniqueSlug = async (businessName) => {
   return slug;
 };
 
+const buildTenantPublicUrl = (slug) => {
+  const rootDomain = process.env.ROOT_DOMAIN;
+  if (rootDomain) {
+    return `https://${slug}.${rootDomain}`;
+  }
+
+  return `${process.env.FRONTEND_URL}/menu/${slug}`;
+};
+
 const buildFileUrl = (req, filename) =>
   `${req.protocol}://${req.get("host")}/uploads/${filename}`;
 
 module.exports = {
+  buildTenantPublicUrl,
   buildFileUrl,
   createResponse,
   generateUniqueSlug,

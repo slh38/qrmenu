@@ -9,14 +9,46 @@ import QRCodePage from "./pages/QRCode";
 import Register from "./pages/Register";
 import { getToken } from "./lib/api";
 
+const ROOT_DOMAIN = (import.meta.env.VITE_ROOT_DOMAIN || "").toLowerCase();
+const RESERVED_HOSTS = new Set(["www", "api"]);
+
+function getTenantSubdomain(hostname) {
+  if (!ROOT_DOMAIN) {
+    return "";
+  }
+
+  const normalizedHost = hostname.toLowerCase();
+  if (normalizedHost === ROOT_DOMAIN || normalizedHost === `www.${ROOT_DOMAIN}`) {
+    return "";
+  }
+
+  if (!normalizedHost.endsWith(`.${ROOT_DOMAIN}`)) {
+    return "";
+  }
+
+  const subdomain = normalizedHost.slice(0, -(ROOT_DOMAIN.length + 1));
+  return RESERVED_HOSTS.has(subdomain) ? "" : subdomain;
+}
+
 function ProtectedRoute({ children }) {
   return getToken() ? children : <Navigate to="/login" replace />;
+}
+
+function HomeRoute() {
+  const tenantSubdomain = getTenantSubdomain(window.location.hostname);
+  return tenantSubdomain ? <PublicMenu forcedSlug={tenantSubdomain} /> : <Navigate to="/dashboard" replace />;
+}
+
+function CategoryRoute() {
+  const tenantSubdomain = getTenantSubdomain(window.location.hostname);
+  return tenantSubdomain ? <PublicMenu forcedSlug={tenantSubdomain} /> : <Navigate to="/dashboard" replace />;
 }
 
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      <Route path="/" element={<HomeRoute />} />
+      <Route path="/category/:categoryId" element={<CategoryRoute />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/menu/:slug" element={<PublicMenu />} />
