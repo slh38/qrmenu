@@ -3,14 +3,17 @@ import { Link } from "react-router-dom";
 
 const featureCards = [
   {
+    icon: "qr",
     title: "QR Kod ile Kolay Erisim",
     text: "Masadaki tek bir kod ile menunuzu aninda acin, baski maliyetini azaltin ve servis akisini hizlandirin.",
   },
   {
+    icon: "refresh",
     title: "Anlik Guncelleme",
     text: "Fiyat, kategori ve urun degisikliklerini panelden dakikalar icinde yayinlayin. Yeni baski beklemeyin.",
   },
   {
+    icon: "palette",
     title: "Tema Secenekleri",
     text: "Restoraniniza uygun modern menu sunumunu secin, sosyal medya ve marka alanlariyla daha guclu gorunun.",
   },
@@ -41,6 +44,40 @@ function SectionTitle({ eyebrow, title, text }) {
       <h2 className="mt-4 font-display text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">{title}</h2>
       <p className="mt-4 text-base leading-7 text-slate-600">{text}</p>
     </div>
+  );
+}
+
+function FeatureIcon({ type }) {
+  const baseClass = "h-7 w-7 text-[#2563eb]";
+
+  if (type === "qr") {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" className={baseClass}>
+        <rect x="3" y="3" width="6" height="6" rx="1.2" />
+        <rect x="15" y="3" width="6" height="6" rx="1.2" />
+        <rect x="3" y="15" width="6" height="6" rx="1.2" />
+        <path d="M15 15h2v2h-2zM19 15h2v2h-2zM17 17h2v2h-2zM15 19h4M7 7h0M19 7h0M7 19h0" />
+      </svg>
+    );
+  }
+
+  if (type === "refresh") {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" className={baseClass}>
+        <path d="M20 6v5h-5" />
+        <path d="M4 18v-5h5" />
+        <path d="M6.8 9A7 7 0 0 1 18 7l2 4" />
+        <path d="M17.2 15A7 7 0 0 1 6 17l-2-4" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" className={baseClass}>
+      <path d="M12 3l1.6 3.5L17 8l-3.4 1.5L12 13l-1.6-3.5L7 8l3.4-1.5L12 3Z" />
+      <path d="M5 14l.9 2 .1 2.1L8 19l-2 1 .1 1.9L4 21l-2 1 .1-1.9L0 19l2-1 .1-2.1L3 14l2 1Z" transform="translate(8 0)" />
+      <path d="M4 20c2-3 6-5 8-5s6 2 8 5" />
+    </svg>
   );
 }
 
@@ -158,11 +195,15 @@ export default function Landing() {
 
             <div className="relative flex items-center justify-center">
               <div className="relative w-full max-w-[620px]">
-                <div className="absolute left-0 top-10 hidden h-72 w-56 rounded-[2rem] bg-white/70 shadow-soft backdrop-blur lg:block" />
                 <div className="absolute right-0 top-14 hidden w-56 rounded-[2rem] bg-gradient-to-br from-[#173b8f] to-[#2563eb] p-5 text-white shadow-[0_26px_60px_rgba(23,59,143,0.34)] lg:block">
                   <h3 className="text-3xl font-extrabold tracking-tight">JokerQRMenu</h3>
                   <div className="mt-6 rounded-[1.6rem] bg-white p-4">
-                    <div className="aspect-square w-full rounded-[1.1rem] bg-[linear-gradient(90deg,#111_10%,transparent_10%),linear-gradient(#111_10%,transparent_10%)] bg-[length:18px_18px] bg-white p-4" />
+                    <div className="flex aspect-square w-full items-center justify-center rounded-[1.1rem] border border-slate-200 bg-[#f8fbff] p-4 text-center">
+                      <div>
+                        <div className="mx-auto h-16 w-16 rounded-[1.2rem] border-2 border-dashed border-[#2563eb]/35 bg-blue-50" />
+                        <p className="mt-4 text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Demo QR Alani</p>
+                      </div>
+                    </div>
                   </div>
                   <p className="mt-6 text-center text-2xl font-extrabold leading-tight">MENU ICIN OKUTUN</p>
                 </div>
@@ -220,7 +261,9 @@ export default function Landing() {
           <div className="mt-10 grid gap-5 lg:grid-cols-3">
             {featureCards.map((card) => (
               <article key={card.title} className="rounded-[2rem] border border-white/70 bg-white/85 p-6 shadow-soft">
-                <div className="inline-flex h-14 w-14 rounded-[1.25rem] bg-blue-50" />
+                <div className="inline-flex h-14 w-14 items-center justify-center rounded-[1.25rem] bg-blue-50">
+                  <FeatureIcon type={card.icon} />
+                </div>
                 <h3 className="mt-5 text-xl font-extrabold tracking-tight text-slate-900">{card.title}</h3>
                 <p className="mt-3 text-sm leading-7 text-slate-600">{card.text}</p>
               </article>
@@ -296,7 +339,7 @@ export default function Landing() {
               <div className="rounded-[2rem] bg-white p-6 text-slate-900 shadow-soft">
                 <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[#2563eb]">Baslangic</p>
                 <div className="mt-4 flex items-end gap-2">
-                  <span className="font-display text-5xl font-extrabold tracking-tight">₺0</span>
+                  <span className="font-display text-5xl font-extrabold tracking-tight">₺2500</span>
                   <span className="pb-2 text-sm text-slate-500">ile basla</span>
                 </div>
                 <ul className="mt-6 space-y-3 text-sm leading-7 text-slate-600">

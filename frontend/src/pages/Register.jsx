@@ -40,14 +40,14 @@ export default function Register() {
     <div className="flex min-h-screen items-center justify-center px-4 py-10">
       <div className="glass-panel w-full max-w-3xl p-6 shadow-soft sm:p-8">
         <div className="mb-8">
-          <p className="text-sm uppercase tracking-[0.35em] text-[#2563eb]">Yeni Isletme</p>
-          <h1 className="mt-3 font-display text-4xl text-ink">Kayit Ol</h1>
+          <p className="text-sm uppercase tracking-[0.35em] text-[#2563eb]">Yeni İşletme</p>
+          <h1 className="mt-3 font-display text-4xl text-ink">Kayıt Ol</h1>
         </div>
 
         <form onSubmit={handleSubmit} className="grid gap-4 sm:grid-cols-2">
           <input
             type="text"
-            placeholder="Isletme adi"
+            placeholder="İşletme adı"
             value={form.businessName}
             onChange={(event) => setForm({ ...form, businessName: event.target.value })}
             className="rounded-2xl border border-blue-100 bg-white px-4 py-3 outline-none focus:border-blue-400 sm:col-span-2"
@@ -55,7 +55,7 @@ export default function Register() {
           />
           <input
             type="text"
-            placeholder="Yetkili adi"
+            placeholder="Yetkili adı"
             value={form.ownerName}
             onChange={(event) => setForm({ ...form, ownerName: event.target.value })}
             className="rounded-2xl border border-blue-100 bg-white px-4 py-3 outline-none focus:border-blue-400"
@@ -77,7 +77,7 @@ export default function Register() {
           />
           <input
             type="password"
-            placeholder="Sifre"
+            placeholder="Şifre"
             value={form.password}
             onChange={(event) => setForm({ ...form, password: event.target.value })}
             className="rounded-2xl border border-blue-100 bg-white px-4 py-3 outline-none focus:border-blue-400"
@@ -97,14 +97,14 @@ export default function Register() {
             disabled={loading}
             className="rounded-2xl bg-[#173b8f] px-4 py-3 font-semibold text-white transition hover:bg-[#102c6e] disabled:opacity-60 sm:col-span-2"
           >
-            {loading ? "Kayit olusturuluyor..." : "Kayit Ol"}
+            {loading ? "Kayıt oluşturuluyor..." : "Kayıt Ol"}
           </button>
         </form>
 
         <p className="mt-5 text-sm text-slate-600">
-          Zaten hesabiniz var mi?{" "}
+          Zaten hesabınız var mı?{" "}
           <Link to="/login" className="font-semibold text-[#2563eb]">
-            Giris yap
+            Giriş yap
           </Link>
         </p>
       </div>
