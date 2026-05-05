@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
+import { themeOptions } from "../lib/themeOptions";
 
 const navItems = [
   { to: "/dashboard", label: "Genel Bakis" },
@@ -9,6 +11,33 @@ const navItems = [
 
 export default function Layout() {
   const navigate = useNavigate();
+  const [tenant, setTenant] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("qrmenu_tenant") || "null");
+    } catch {
+      return null;
+    }
+  });
+
+  useEffect(() => {
+    const syncTenant = () => {
+      try {
+        setTenant(JSON.parse(localStorage.getItem("qrmenu_tenant") || "null"));
+      } catch {
+        setTenant(null);
+      }
+    };
+
+    window.addEventListener("storage", syncTenant);
+    window.addEventListener("qrmenu-tenant-updated", syncTenant);
+
+    return () => {
+      window.removeEventListener("storage", syncTenant);
+      window.removeEventListener("qrmenu-tenant-updated", syncTenant);
+    };
+  }, []);
+
+  const selectedTheme = themeOptions.find((theme) => theme.id === tenant?.theme);
 
   const logout = () => {
     localStorage.removeItem("qrmenu_token");
@@ -25,6 +54,11 @@ export default function Layout() {
               QRMenu
             </Link>
             <p className="mt-2 text-sm text-white/80">Coklu isletme QR menu paneli</p>
+            {selectedTheme ? (
+              <div className="mt-4 inline-flex rounded-2xl border border-white/20 bg-white/10 px-3 py-2 text-xs font-semibold text-white/90 backdrop-blur">
+                Secili tema: {selectedTheme.name}
+              </div>
+            ) : null}
           </div>
 
           <nav className="space-y-2 p-4">

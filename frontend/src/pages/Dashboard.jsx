@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { request, resolveAssetUrl } from "../lib/api";
-import { themeOptions } from "../lib/themeOptions";
 
 const ROOT_DOMAIN = (import.meta.env.VITE_ROOT_DOMAIN || "").toLowerCase();
 
@@ -80,6 +79,7 @@ export default function Dashboard() {
   const syncTenant = (nextTenant) => {
     setTenant(nextTenant);
     localStorage.setItem("qrmenu_tenant", JSON.stringify(nextTenant));
+    window.dispatchEvent(new Event("qrmenu-tenant-updated"));
   };
 
   const logoUrl = resolveAssetUrl(selectedFiles.logo.preview || tenant?.logoUrl || "");
@@ -202,8 +202,6 @@ export default function Dashboard() {
     }
   };
 
-  const selectedTheme = themeOptions.find((theme) => theme.id === form.theme);
-
   return (
     <div className="space-y-6">
       <section className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
@@ -238,10 +236,6 @@ export default function Dashboard() {
                   {tenant?.businessName?.slice(0, 1) || "Q"}
                 </div>
               )}
-              <div className="w-[112px] rounded-[1.5rem] border border-white/15 bg-white/10 px-3 py-3 backdrop-blur">
-                <p className="text-xs uppercase tracking-[0.25em] text-white/70">Tema</p>
-                <p className="mt-2 break-words text-sm font-semibold leading-tight">{selectedTheme?.name || "Showcase"}</p>
-              </div>
             </div>
           </div>
         </div>
