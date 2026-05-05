@@ -31,56 +31,78 @@ export default function Login() {
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-10">
-      <div className="grid w-full max-w-5xl gap-6 lg:grid-cols-[1.15fr_0.85fr]">
-        <section className="rounded-[2rem] bg-gradient-to-br from-[#173b8f] via-[#2563eb] to-[#5b8cff] p-8 text-white shadow-soft sm:p-10">
-          <h1 className="mt-4 font-display text-4xl leading-tight sm:text-5xl">
-            QR menü yönetimini tek panelden kontrol et.
-          </h1>
-          <p className="mt-5 max-w-xl text-base text-white/75 sm:text-lg">
-            Kategorileri yönet, ürünleri güncelle ve masalara asabileceğin QR kodunu anında üret.
-          </p>
-        </section>
+      <div className="w-full max-w-5xl">
+        <div className="mb-5">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-3 rounded-2xl border border-white/70 bg-white/85 px-4 py-3 text-sm font-semibold text-[#173b8f] shadow-soft transition hover:bg-white"
+          >
+            <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-[#2563eb] text-white">J</span>
+            <span>JokerQRMenu Ana Sayfa</span>
+          </Link>
+        </div>
 
-        <section className="glass-panel p-6 shadow-soft sm:p-8">
-          <h2 className="font-display text-3xl text-ink">Giriş Yap</h2>
-          <p className="mt-2 text-sm text-slate-600">Paneline ulaşmak için hesap bilgilerini gir.</p>
+        <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+          <section className="rounded-[2rem] bg-gradient-to-br from-[#173b8f] via-[#2563eb] to-[#5b8cff] p-8 text-white shadow-soft sm:p-10">
+            <h1 className="mt-4 font-display text-4xl leading-tight sm:text-5xl">
+              QR menü yönetimini tek panelden kontrol et.
+            </h1>
+            <p className="mt-5 max-w-xl text-base text-white/75 sm:text-lg">
+              Kategorileri yönet, ürünleri güncelle ve masalara asabileceğin QR kodunu anında üret.
+            </p>
+          </section>
 
-          <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-            <input
-              type="email"
-              placeholder="E-posta"
-              value={form.email}
-              onChange={(event) => setForm({ ...form, email: event.target.value })}
-              className="w-full rounded-2xl border border-blue-100 bg-white px-4 py-3 outline-none ring-0 transition focus:border-blue-400"
-              required
-            />
-            <input
-              type="password"
-              placeholder="Şifre"
-              value={form.password}
-              onChange={(event) => setForm({ ...form, password: event.target.value })}
-              className="w-full rounded-2xl border border-blue-100 bg-white px-4 py-3 outline-none ring-0 transition focus:border-blue-400"
-              required
-            />
+          <section className="glass-panel p-6 shadow-soft sm:p-8">
+            <h2 className="font-display text-3xl text-ink">Giriş Yap</h2>
+            <p className="mt-2 text-sm text-slate-600">Paneline ulaşmak için hesap bilgilerini gir.</p>
 
-            {error ? <p className="text-sm text-red-600">{error}</p> : null}
+            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+              <input
+                type="email"
+                placeholder="E-posta"
+                value={form.email}
+                onChange={(event) => setForm({ ...form, email: event.target.value })}
+                className="w-full rounded-2xl border border-blue-100 bg-white px-4 py-3 outline-none ring-0 transition focus:border-blue-400"
+                required
+              />
+              <input
+                type="password"
+                placeholder="Şifre"
+                value={form.password}
+                onChange={(event) => setForm({ ...form, password: event.target.value })}
+                className="w-full rounded-2xl border border-blue-100 bg-white px-4 py-3 outline-none ring-0 transition focus:border-blue-400"
+                required
+              />
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full rounded-2xl bg-[#2563eb] px-4 py-3 font-semibold text-white transition hover:bg-[#1d4ed8] disabled:opacity-60"
-            >
-              {loading ? "Giriş yapılıyor..." : "Giriş Yap"}
-            </button>
-          </form>
+              <div className="rounded-2xl border border-blue-100 bg-blue-50/70 px-4 py-3">
+                <p className="text-sm font-semibold text-[#173b8f]">Şifremi unuttum</p>
+                <p className="mt-1 text-sm leading-6 text-slate-600">
+                  Şifrenizi sıfırlamak için kayıtlı e-posta adresinizle bizimle iletişime geçin.
+                </p>
+                <a href="/#iletisim" className="mt-2 inline-flex text-sm font-semibold text-[#2563eb] hover:text-[#1d4ed8]">
+                  İletişime git
+                </a>
+              </div>
 
-          <p className="mt-5 text-sm text-slate-600">
-            Hesabın yok mu?{" "}
-            <Link to="/register" className="font-semibold text-[#2563eb]">
-              Kayıt ol
-            </Link>
-          </p>
-        </section>
+              {error ? <p className="text-sm text-red-600">{error}</p> : null}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full rounded-2xl bg-[#2563eb] px-4 py-3 font-semibold text-white transition hover:bg-[#1d4ed8] disabled:opacity-60"
+              >
+                {loading ? "Giriş yapılıyor..." : "Giriş Yap"}
+              </button>
+            </form>
+
+            <p className="mt-5 text-sm text-slate-600">
+              Hesabın yok mu?{" "}
+              <Link to="/register" className="font-semibold text-[#2563eb]">
+                Kayıt ol
+              </Link>
+            </p>
+          </section>
+        </div>
       </div>
     </div>
   );
