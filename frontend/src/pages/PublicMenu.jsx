@@ -442,7 +442,7 @@ export default function PublicMenu({ forcedSlug = "" }) {
         </div>
       </section>
 
-      <footer className="px-4 pb-8 pt-3 text-center text-xs uppercase tracking-[0.28em] text-slate-400">Powered by QRMenu</footer>
+      <footer className="px-4 pb-8 pt-3 text-center text-xs uppercase tracking-[0.28em] text-slate-400">Joker QR Menu</footer>
     </div>
   );
 }
