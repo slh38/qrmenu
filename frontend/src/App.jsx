@@ -3,11 +3,13 @@ import Layout from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
 import Landing from "./pages/Landing";
 import Categories from "./pages/Categories";
+import ForgotPassword from "./pages/ForgotPassword";
 import Login from "./pages/Login";
 import MenuItems from "./pages/MenuItems";
 import PublicMenu from "./pages/PublicMenu";
 import QRCodePage from "./pages/QRCode";
 import Register from "./pages/Register";
+import ResetPassword from "./pages/ResetPassword";
 import { getToken } from "./lib/api";
 
 const ROOT_DOMAIN = (import.meta.env.VITE_ROOT_DOMAIN || "").toLowerCase();
@@ -51,6 +53,8 @@ export default function App() {
       <Route path="/" element={<HomeRoute />} />
       <Route path="/category/:categoryId" element={<CategoryRoute />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password/:token" element={<ResetPassword />} />
       <Route path="/register" element={<Register />} />
       <Route path="/menu/:slug" element={<PublicMenu />} />
       <Route path="/menu/:slug/category/:categoryId" element={<PublicMenu />} />

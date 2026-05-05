@@ -74,14 +74,10 @@ export default function Login() {
                 required
               />
 
-              <div className="rounded-2xl border border-blue-100 bg-blue-50/70 px-4 py-3">
-                <p className="text-sm font-semibold text-[#173b8f]">Şifremi unuttum</p>
-                <p className="mt-1 text-sm leading-6 text-slate-600">
-                  Şifrenizi sıfırlamak için kayıtlı e-posta adresinizle bizimle iletişime geçin.
-                </p>
-                <a href="/#iletisim" className="mt-2 inline-flex text-sm font-semibold text-[#2563eb] hover:text-[#1d4ed8]">
-                  İletişime git
-                </a>
+              <div className="flex items-center justify-between gap-4">
+                <Link to="/forgot-password" className="text-sm font-semibold text-[#2563eb] hover:text-[#1d4ed8]">
+                  Şifremi unuttum
+                </Link>
               </div>
 
               {error ? <p className="text-sm text-red-600">{error}</p> : null}

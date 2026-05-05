@@ -79,6 +79,14 @@ const tenantSchema = new mongoose.Schema(
       type: socialLinkSchema,
       default: () => ({}),
     },
+    resetPasswordToken: {
+      type: String,
+      default: "",
+    },
+    resetPasswordExpiresAt: {
+      type: Date,
+      default: null,
+    },
   },
   { timestamps: true }
 );
