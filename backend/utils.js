@@ -23,19 +23,31 @@ const slugify = (value) =>
     .replace(/[^a-z0-9\s-]/g, "")
     .trim()
     .replace(/\s+/g, "-")
-    .replace(/-+/g, "-");
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
 
-const generateUniqueSlug = async (businessName) => {
-  const baseSlug = slugify(businessName) || "isletme";
-  let slug = RESERVED_SUBDOMAINS.has(baseSlug) ? `${baseSlug}-menu` : baseSlug;
+const isReservedSubdomain = (slug) => RESERVED_SUBDOMAINS.has(slug);
+
+const ensureUniqueSlug = async (requestedSlug, excludeTenantId = "") => {
+  const baseSlug = slugify(requestedSlug) || "isletme";
+  let slug = isReservedSubdomain(baseSlug) ? `${baseSlug}-menu` : baseSlug;
   let counter = 2;
 
-  while (await Tenant.exists({ slug })) {
+  while (
+    await Tenant.exists({
+      slug,
+      ...(excludeTenantId ? { _id: { $ne: excludeTenantId } } : {}),
+    })
+  ) {
     slug = `${baseSlug}-${counter}`;
     counter += 1;
   }
 
   return slug;
+};
+
+const generateUniqueSlug = async (businessName) => {
+  return ensureUniqueSlug(businessName);
 };
 
 const buildTenantPublicUrl = (slug) => {
@@ -54,6 +66,8 @@ module.exports = {
   buildTenantPublicUrl,
   buildFileUrl,
   createResponse,
+  ensureUniqueSlug,
   generateUniqueSlug,
+  isReservedSubdomain,
   slugify,
 };

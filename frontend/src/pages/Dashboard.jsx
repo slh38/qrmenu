@@ -30,13 +30,31 @@ const socialFields = [
   { key: "whatsapp", label: "WhatsApp", placeholder: "https://wa.me/90555..." },
 ];
 
+function normalizeSlugInput(value) {
+  return value
+    .toLowerCase()
+    .replace(/ı/g, "i")
+    .replace(/ğ/g, "g")
+    .replace(/ü/g, "u")
+    .replace(/ş/g, "s")
+    .replace(/ö/g, "o")
+    .replace(/ç/g, "c")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
 export default function Dashboard() {
   const [tenant, setTenant] = useState(null);
   const [stats, setStats] = useState({ categoryCount: 0, menuItemCount: 0 });
   const [form, setForm] = useState(initialForm);
+  const [slugDraft, setSlugDraft] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [uploading, setUploading] = useState({ logo: false, cover: false });
+  const [changingSlug, setChangingSlug] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState({
     logo: { name: "", preview: "" },
     cover: { name: "", preview: "" },
@@ -57,12 +75,18 @@ export default function Dashboard() {
     return ROOT_DOMAIN ? `https://${tenant.slug}.${ROOT_DOMAIN}` : `/menu/${tenant.slug}`;
   }, [tenant?.slug]);
 
+  const slugPreview = useMemo(() => {
+    const nextSlug = slugDraft || "subdomain";
+    return `${nextSlug}.${ROOT_DOMAIN || "jokerqrmenu.com"}`;
+  }, [slugDraft]);
+
   const loadProfile = async () => {
     try {
       const result = await request("/tenant/me");
       const nextTenant = result.data.tenant;
       setTenant(nextTenant);
       setStats(result.data.stats);
+      setSlugDraft(nextTenant.slug || "");
       setForm({
         businessName: nextTenant.businessName || "",
         phone: nextTenant.phone || "",
@@ -100,6 +124,27 @@ export default function Dashboard() {
       setMessage("İşletme ayarları güncellendi.");
     } catch (saveError) {
       setError(saveError.message);
+    }
+  };
+
+  const saveSlug = async (event) => {
+    event.preventDefault();
+    setMessage("");
+    setError("");
+    setChangingSlug(true);
+
+    try {
+      const result = await request("/tenant/me/slug", {
+        method: "PUT",
+        body: JSON.stringify({ slug: slugDraft }),
+      });
+      syncTenant(result.data.tenant);
+      setSlugDraft(result.data.tenant.slug || "");
+      setMessage(result.message);
+    } catch (saveError) {
+      setError(saveError.message);
+    } finally {
+      setChangingSlug(false);
     }
   };
 
@@ -198,6 +243,49 @@ export default function Dashboard() {
         </div>
       </section>
 
+      <section className="glass-panel p-6 shadow-soft">
+        <div className="flex flex-col gap-2">
+          <h2 className="font-display text-3xl font-extrabold text-ink">Subdomain Ayarı</h2>
+          <p className="text-sm text-slate-600">
+            Marka adını değiştirsen bile sadece subdomaini yenileyebilirsin. Kategoriler, ürünler ve görseller aynı kalır.
+          </p>
+        </div>
+
+        <form onSubmit={saveSlug} className="mt-6 grid gap-4 lg:grid-cols-[1fr_auto]">
+          <div className="space-y-3">
+            <label className="block">
+              <span className="mb-2 block text-sm font-semibold text-slate-700">Yeni subdomain</span>
+              <div className="flex overflow-hidden rounded-2xl border border-blue-100 bg-white">
+                <input
+                  type="text"
+                  value={slugDraft}
+                  onChange={(event) => setSlugDraft(normalizeSlugInput(event.target.value))}
+                  placeholder="ornekisletme"
+                  className="min-w-0 flex-1 px-4 py-3 outline-none"
+                />
+                <div className="flex items-center border-l border-blue-100 bg-slate-50 px-4 text-sm text-slate-500">
+                  .{ROOT_DOMAIN || "jokerqrmenu.com"}
+                </div>
+              </div>
+            </label>
+            <p className="text-sm text-slate-500">
+              Yeni adres önizlemesi: <span className="font-semibold text-slate-700">{slugPreview}</span>
+            </p>
+            <div className="rounded-2xl bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">
+              Subdomain değiştiğinde eski QR kodlar ve eski menü linkleri çalışmaz. Yeni QR kodunu tekrar üretmen gerekir.
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={changingSlug || !slugDraft || slugDraft === tenant?.slug}
+            className="rounded-[1.5rem] bg-[#173b8f] px-5 py-4 text-sm font-semibold text-white transition hover:bg-[#102c6e] disabled:cursor-not-allowed disabled:bg-slate-300 lg:self-start"
+          >
+            {changingSlug ? "Güncelleniyor..." : "Subdomaini Değiştir"}
+          </button>
+        </form>
+      </section>
+
       <form onSubmit={saveProfile} className="space-y-6">
         <section className="glass-panel p-6 shadow-soft">
           <div className="flex flex-col gap-2">
@@ -254,10 +342,11 @@ export default function Dashboard() {
               onChange={(event) => setForm({ ...form, logoSize: event.target.value })}
               className="rounded-2xl border border-blue-100 bg-white px-4 py-3 text-sm outline-none focus:border-blue-400"
             >
-              <option value="sm">Logo boyutu: Kucuk</option>
+              <option value="sm">Logo boyutu: Küçük</option>
               <option value="md">Logo boyutu: Orta</option>
-              <option value="lg">Logo boyutu: Buyuk</option>
+              <option value="lg">Logo boyutu: Büyük</option>
             </select>
+
             <div className="grid gap-4 md:col-span-2 sm:grid-cols-2">
               <div className="rounded-[1.5rem] border border-blue-100 bg-white p-4">
                 <div className="flex items-center justify-between gap-3">
@@ -336,7 +425,15 @@ export default function Dashboard() {
                       : "border-slate-200 bg-white hover:border-blue-200 hover:bg-blue-50/50"
                   }`}
                 >
-                  <div className={`rounded-[1.35rem] p-4 ${theme.id === "showcase" ? "bg-gradient-to-br from-[#0f2f73] via-[#2563eb] to-[#78a9ff] text-white" : theme.id === "minimal" ? "bg-slate-100 text-slate-800" : "bg-[#111827] text-white"}`}>
+                  <div
+                    className={`rounded-[1.35rem] p-4 ${
+                      theme.id === "showcase"
+                        ? "bg-gradient-to-br from-[#0f2f73] via-[#2563eb] to-[#78a9ff] text-white"
+                        : theme.id === "minimal"
+                          ? "bg-slate-100 text-slate-800"
+                          : "bg-[#111827] text-white"
+                    }`}
+                  >
                     <div className="text-xs uppercase tracking-[0.3em] opacity-75">Tema</div>
                     <div className="mt-3 font-display text-2xl font-extrabold">{theme.name}</div>
                     <div className="mt-4 grid gap-2">
