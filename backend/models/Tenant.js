@@ -11,6 +11,21 @@ const socialLinkSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const menuViewSchema = new mongoose.Schema(
+  {
+    day: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    count: {
+      type: Number,
+      default: 0,
+    },
+  },
+  { _id: false }
+);
+
 const tenantSchema = new mongoose.Schema(
   {
     businessName: {
@@ -83,6 +98,14 @@ const tenantSchema = new mongoose.Schema(
     socialLinks: {
       type: socialLinkSchema,
       default: () => ({}),
+    },
+    menuViewCount: {
+      type: Number,
+      default: 0,
+    },
+    menuViewHistory: {
+      type: [menuViewSchema],
+      default: [],
     },
     resetPasswordToken: {
       type: String,

@@ -59,9 +59,37 @@ function sanitizeSlugDraft(value) {
     .replace(/[^a-z0-9\s._-]/g, "");
 }
 
+function TrendBars({ trend }) {
+  const highest = Math.max(...trend.map((item) => item.count), 1);
+
+  return (
+    <div className="mt-4">
+      <div className="flex h-24 items-end gap-2">
+        {trend.map((item) => (
+          <div key={item.day} className="flex flex-1 flex-col items-center gap-2">
+            <div className="text-[11px] font-semibold text-slate-500">{item.count}</div>
+            <div className="flex h-16 w-full items-end">
+              <div
+                className="w-full rounded-t-2xl bg-gradient-to-t from-[#173b8f] to-[#60a5fa]"
+                style={{ height: `${Math.max((item.count / highest) * 100, item.count > 0 ? 18 : 6)}%` }}
+              />
+            </div>
+            <div className="text-[11px] text-slate-400">{item.day}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const [tenant, setTenant] = useState(null);
-  const [stats, setStats] = useState({ categoryCount: 0, menuItemCount: 0 });
+  const [stats, setStats] = useState({
+    categoryCount: 0,
+    menuItemCount: 0,
+    menuViewCount: 0,
+    menuViewTrend: [],
+  });
   const [form, setForm] = useState(initialForm);
   const [slugDraft, setSlugDraft] = useState("");
   const [message, setMessage] = useState("");
@@ -98,7 +126,12 @@ export default function Dashboard() {
       const result = await request("/tenant/me");
       const nextTenant = result.data.tenant;
       setTenant(nextTenant);
-      setStats(result.data.stats);
+      setStats({
+        categoryCount: result.data.stats.categoryCount || 0,
+        menuItemCount: result.data.stats.menuItemCount || 0,
+        menuViewCount: result.data.stats.menuViewCount || 0,
+        menuViewTrend: result.data.stats.menuViewTrend || [],
+      });
       setSlugDraft(nextTenant.slug || "");
       setForm({
         businessName: nextTenant.businessName || "",
@@ -198,42 +231,56 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <section className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#0f2f73] via-[#2563eb] to-[#78a9ff] p-6 text-white shadow-soft sm:p-8">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.16),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(8,30,73,0.24),transparent_30%)]" />
-        <div className="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-2xl">
-            <p className="text-sm uppercase tracking-[0.35em] text-blue-100">Kontrol Merkezi</p>
-            <h1 className="mt-4 font-display text-4xl font-extrabold tracking-tight sm:text-5xl">
-              {tenant?.businessName || "İşletmeniz"}
-            </h1>
-            <p className="mt-3 max-w-xl text-sm text-white/80 sm:text-base">
-              {tenant?.tagline || "Restoranınızın dijital menüsü için tema, sosyal medya ve vitrin alanlarını yönetin."}
-            </p>
-            {publicMenuUrl ? (
-              <a
-                href={publicMenuUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-white/90 underline decoration-white/30 underline-offset-4 hover:text-white"
-              >
-                Menü kısayolu: {publicMenuUrl.replace(/^https?:\/\//, "")}
-              </a>
-            ) : null}
-          </div>
+      <section className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
+        <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#0f2f73] via-[#2563eb] to-[#78a9ff] p-6 text-white shadow-soft sm:p-8">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.16),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(8,30,73,0.24),transparent_30%)]" />
+          <div className="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-2xl">
+              <p className="text-sm uppercase tracking-[0.35em] text-blue-100">Kontrol Merkezi</p>
+              <h1 className="mt-4 font-display text-4xl font-extrabold tracking-tight sm:text-5xl">
+                {tenant?.businessName || "İşletmeniz"}
+              </h1>
+              <p className="mt-3 max-w-xl text-sm text-white/80 sm:text-base">
+                {tenant?.tagline || "Restoranınızın dijital menüsü için tema, sosyal medya ve vitrin alanlarını yönetin."}
+              </p>
+              {publicMenuUrl ? (
+                <a
+                  href={publicMenuUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-white/90 underline decoration-white/30 underline-offset-4 hover:text-white"
+                >
+                  Menü kısayolu: {publicMenuUrl.replace(/^https?:\/\//, "")}
+                </a>
+              ) : null}
+            </div>
 
-          <div className="flex items-center gap-4">
-            {logoUrl ? (
-              <img src={logoUrl} alt={tenant?.businessName || "Logo"} className="h-20 w-20 rounded-[1.75rem] object-cover shadow-soft" />
-            ) : (
-              <div className="flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-white/15 text-2xl font-bold">
-                {tenant?.businessName?.slice(0, 1) || "Q"}
+            <div className="flex items-center gap-4">
+              {logoUrl ? (
+                <img src={logoUrl} alt={tenant?.businessName || "Logo"} className="h-20 w-20 rounded-[1.75rem] object-cover shadow-soft" />
+              ) : (
+                <div className="flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-white/15 text-2xl font-bold">
+                  {tenant?.businessName?.slice(0, 1) || "Q"}
+                </div>
+              )}
+              <div className="rounded-[1.5rem] border border-white/15 bg-white/10 px-4 py-3 backdrop-blur">
+                <p className="text-xs uppercase tracking-[0.3em] text-white/70">Aktif Tema</p>
+                <p className="mt-2 text-lg font-semibold">{selectedTheme?.name || "Showcase"}</p>
               </div>
-            )}
-            <div className="rounded-[1.5rem] border border-white/15 bg-white/10 px-4 py-3 backdrop-blur">
-              <p className="text-xs uppercase tracking-[0.3em] text-white/70">Aktif Tema</p>
-              <p className="mt-2 text-lg font-semibold">{selectedTheme?.name || "Showcase"}</p>
             </div>
           </div>
+        </div>
+
+        <div className="glass-panel p-6 shadow-soft">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="text-sm text-slate-500">Toplam Menü Görüntülenmesi</p>
+              <p className="mt-3 font-display text-5xl font-extrabold text-ink">{stats.menuViewCount}</p>
+              <p className="mt-2 text-sm text-slate-500">Public menü her açıldığında bu sayaç bir artar.</p>
+            </div>
+            <div className="rounded-2xl bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700">Son 7 gün</div>
+          </div>
+          <TrendBars trend={stats.menuViewTrend.length ? stats.menuViewTrend : [{ day: "00.00", count: 0 }]} />
         </div>
       </section>
 
@@ -285,7 +332,7 @@ export default function Dashboard() {
               Yeni adres önizlemesi: <span className="font-semibold text-slate-700">{slugPreview}</span>
             </p>
             <p className="text-xs text-slate-500">
-              Yazarken <code>.</code>, <code>_</code> ve <code>-</code> kullanabilirsin. Kayit aninda <code>.</code> ve <code>_</code> otomatik olarak <code>-</code> formatina cevrilir.
+              Yazarken <code>.</code>, <code>_</code> ve <code>-</code> kullanabilirsin. Kayıt anında <code>.</code> ve <code>_</code> otomatik olarak <code>-</code> formatına çevrilir.
             </p>
             <div className="rounded-2xl bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">
               Subdomain değiştiğinde eski QR kodlar ve eski menü linkleri çalışmaz. Yeni QR kodunu tekrar üretmen gerekir.

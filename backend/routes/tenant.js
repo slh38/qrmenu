@@ -7,6 +7,28 @@ const { buildFileUrl, buildTenantPublicUrl, createResponse, isReservedSubdomain,
 
 const router = express.Router();
 
+function getPastDayKeys(days) {
+  const keys = [];
+
+  for (let index = days - 1; index >= 0; index -= 1) {
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+    date.setDate(date.getDate() - index);
+    keys.push(date.toISOString().slice(0, 10));
+  }
+
+  return keys;
+}
+
+function buildViewTrend(history = []) {
+  const countsByDay = new Map(history.map((entry) => [entry.day, entry.count]));
+
+  return getPastDayKeys(7).map((dayKey) => ({
+    day: dayKey.slice(5).replace("-", "."),
+    count: countsByDay.get(dayKey) || 0,
+  }));
+}
+
 router.get("/me", async (req, res) => {
   try {
     const tenant = await Tenant.findById(req.tenantId).select("-password");
@@ -25,6 +47,8 @@ router.get("/me", async (req, res) => {
         stats: {
           categoryCount,
           menuItemCount,
+          menuViewCount: tenant.menuViewCount || 0,
+          menuViewTrend: buildViewTrend(tenant.menuViewHistory || []),
         },
       })
     );
@@ -60,11 +84,11 @@ router.put("/me/slug", async (req, res) => {
     const nextSlug = slugify(requestedSlug);
 
     if (!nextSlug || nextSlug.length < 3) {
-      return res.status(400).json(createResponse(false, "Subdomain en az 3 karakter olmali.", {}));
+      return res.status(400).json(createResponse(false, "Subdomain en az 3 karakter olmalı.", {}));
     }
 
     if (isReservedSubdomain(nextSlug)) {
-      return res.status(409).json(createResponse(false, "Bu subdomain kullanilamaz. Farkli bir ad sec.", {}));
+      return res.status(409).json(createResponse(false, "Bu subdomain kullanılamaz. Farklı bir ad seç.", {}));
     }
 
     const existingTenant = await Tenant.findOne({
@@ -73,7 +97,7 @@ router.put("/me/slug", async (req, res) => {
     });
 
     if (existingTenant) {
-      return res.status(409).json(createResponse(false, "Bu subdomain zaten kullanimda.", {}));
+      return res.status(409).json(createResponse(false, "Bu subdomain zaten kullanımda.", {}));
     }
 
     const tenant = await Tenant.findByIdAndUpdate(
@@ -83,17 +107,17 @@ router.put("/me/slug", async (req, res) => {
     ).select("-password");
 
     if (!tenant) {
-      return res.status(404).json(createResponse(false, "Isletme bulunamadi.", {}));
+      return res.status(404).json(createResponse(false, "İşletme bulunamadı.", {}));
     }
 
     return res.json(
-      createResponse(true, "Subdomain guncellendi. Eski QR kodlarinizi yeniden olusturmayi unutmayin.", {
+      createResponse(true, "Subdomain güncellendi. Eski QR kodlarınızı yeniden oluşturmayı unutmayın.", {
         tenant,
         publicUrl: buildTenantPublicUrl(tenant.slug),
       })
     );
   } catch (error) {
-    return res.status(500).json(createResponse(false, "Subdomain guncellenemedi.", { error: error.message }));
+    return res.status(500).json(createResponse(false, "Subdomain güncellenemedi.", { error: error.message }));
   }
 });
 
@@ -115,15 +139,15 @@ router.post("/me/logo", upload.single("logo"), async (req, res) => {
 router.post("/me/cover", upload.single("cover"), async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json(createResponse(false, "Kapak gorseli gerekli.", {}));
+      return res.status(400).json(createResponse(false, "Kapak görseli gerekli.", {}));
     }
 
     const coverImageUrl = buildFileUrl(req, req.file.filename);
     const tenant = await Tenant.findByIdAndUpdate(req.tenantId, { coverImageUrl }, { new: true }).select("-password");
 
-    return res.json(createResponse(true, "Kapak gorseli yuklendi.", { tenant }));
+    return res.json(createResponse(true, "Kapak görseli yüklendi.", { tenant }));
   } catch (error) {
-    return res.status(500).json(createResponse(false, "Kapak gorseli yuklenemedi.", { error: error.message }));
+    return res.status(500).json(createResponse(false, "Kapak görseli yüklenemedi.", { error: error.message }));
   }
 });
 

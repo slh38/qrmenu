@@ -6,15 +6,40 @@ const { createResponse } = require("../utils");
 
 const router = express.Router();
 
+function getDayKey(date = new Date()) {
+  return date.toISOString().slice(0, 10);
+}
+
+async function trackMenuView(tenant) {
+  const todayKey = getDayKey();
+  const history = Array.isArray(tenant.menuViewHistory) ? [...tenant.menuViewHistory] : [];
+  const currentEntry = history.find((entry) => entry.day === todayKey);
+
+  if (currentEntry) {
+    currentEntry.count += 1;
+  } else {
+    history.push({ day: todayKey, count: 1 });
+  }
+
+  tenant.menuViewCount = (tenant.menuViewCount || 0) + 1;
+  tenant.menuViewHistory = history
+    .sort((left, right) => left.day.localeCompare(right.day))
+    .slice(-30);
+
+  await tenant.save();
+}
+
 router.get("/menu/:slug", async (req, res) => {
   try {
     const tenant = await Tenant.findOne({ slug: req.params.slug }).select(
-      "businessName logoUrl coverImageUrl logoEffectEnabled logoSize tagline theme primaryColor address phone slug socialLinks"
+      "businessName logoUrl coverImageUrl logoEffectEnabled logoSize tagline theme primaryColor address phone slug socialLinks menuViewCount menuViewHistory"
     );
 
     if (!tenant) {
       return res.status(404).json(createResponse(false, "Menü bulunamadı.", {}));
     }
+
+    await trackMenuView(tenant);
 
     const categories = await Category.find({
       tenantId: tenant._id,
