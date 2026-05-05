@@ -47,6 +47,18 @@ function normalizeSlugInput(value) {
     .replace(/^-|-$/g, "");
 }
 
+function sanitizeSlugDraft(value) {
+  return value
+    .toLowerCase()
+    .replace(/ı/g, "i")
+    .replace(/ğ/g, "g")
+    .replace(/ü/g, "u")
+    .replace(/ş/g, "s")
+    .replace(/ö/g, "o")
+    .replace(/ç/g, "c")
+    .replace(/[^a-z0-9\s._-]/g, "");
+}
+
 export default function Dashboard() {
   const [tenant, setTenant] = useState(null);
   const [stats, setStats] = useState({ categoryCount: 0, menuItemCount: 0 });
@@ -77,7 +89,7 @@ export default function Dashboard() {
   }, [tenant?.slug]);
 
   const slugPreview = useMemo(() => {
-    const nextSlug = slugDraft || "subdomain";
+    const nextSlug = normalizeSlugInput(slugDraft) || "subdomain";
     return `${nextSlug}.${ROOT_DOMAIN || "jokerqrmenu.com"}`;
   }, [slugDraft]);
 
@@ -137,7 +149,7 @@ export default function Dashboard() {
     try {
       const result = await request("/tenant/me/slug", {
         method: "PUT",
-        body: JSON.stringify({ slug: slugDraft }),
+        body: JSON.stringify({ slug: normalizeSlugInput(slugDraft) }),
       });
       syncTenant(result.data.tenant);
       setSlugDraft(result.data.tenant.slug || "");
@@ -260,7 +272,7 @@ export default function Dashboard() {
                 <input
                   type="text"
                   value={slugDraft}
-                  onChange={(event) => setSlugDraft(normalizeSlugInput(event.target.value))}
+                  onChange={(event) => setSlugDraft(sanitizeSlugDraft(event.target.value))}
                   placeholder="ornekisletme"
                   className="min-w-0 flex-1 px-4 py-3 outline-none"
                 />
@@ -273,7 +285,7 @@ export default function Dashboard() {
               Yeni adres önizlemesi: <span className="font-semibold text-slate-700">{slugPreview}</span>
             </p>
             <p className="text-xs text-slate-500">
-              Bosluk, <code>.</code> ve <code>_</code> otomatik olarak <code>-</code> formatina cevrilir.
+              Yazarken <code>.</code>, <code>_</code> ve <code>-</code> kullanabilirsin. Kayit aninda <code>.</code> ve <code>_</code> otomatik olarak <code>-</code> formatina cevrilir.
             </p>
             <div className="rounded-2xl bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">
               Subdomain değiştiğinde eski QR kodlar ve eski menü linkleri çalışmaz. Yeni QR kodunu tekrar üretmen gerekir.
