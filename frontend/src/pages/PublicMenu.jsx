@@ -78,18 +78,34 @@ function LogoBadge({ tenant, dark = false }) {
     return null;
   }
 
-  const effectClass =
-    tenant.logoEffectEnabled !== false
-      ? dark
-        ? "shadow-[0_22px_70px_rgba(0,0,0,0.45)] ring-1 ring-white/10"
-        : "shadow-[0_22px_60px_rgba(37,99,235,0.22)] ring-1 ring-slate-200"
-      : dark
-        ? "shadow-soft ring-1 ring-white/10"
-        : "shadow-sm ring-1 ring-slate-200";
+  const isEffectEnabled = tenant.logoEffectEnabled !== false;
+  const shellClass = isEffectEnabled
+    ? dark
+      ? "shadow-[0_26px_90px_rgba(0,0,0,0.58),0_12px_24px_rgba(255,255,255,0.08)_inset] ring-1 ring-white/15"
+      : "shadow-[0_24px_70px_rgba(37,99,235,0.26),0_10px_22px_rgba(255,255,255,0.92)_inset] ring-1 ring-slate-200"
+    : dark
+      ? "shadow-soft ring-1 ring-white/10"
+      : "shadow-sm ring-1 ring-slate-200";
+  const innerClass = isEffectEnabled
+    ? "scale-[0.94] rounded-[1.6rem] shadow-[0_18px_28px_rgba(15,23,42,0.26)]"
+    : "rounded-[1.5rem]";
 
   return (
-    <div className={`mx-auto mb-6 flex h-28 w-28 items-center justify-center rounded-[2rem] bg-white/95 p-2 backdrop-blur sm:h-32 sm:w-32 ${effectClass}`}>
-      <img src={logoUrl} alt={tenant.businessName} className="h-full w-full rounded-[1.5rem] object-cover" />
+    <div className="mx-auto mb-6 [perspective:1200px]">
+      <div
+        className={`relative flex h-28 w-28 items-center justify-center overflow-hidden rounded-[2rem] bg-white/95 p-2 backdrop-blur transition-transform duration-500 sm:h-32 sm:w-32 ${shellClass} ${
+          isEffectEnabled ? "rotate-x-[14deg] rotate-y-[-12deg] hover:rotate-y-[-6deg] hover:rotate-x-[10deg]" : ""
+        }`}
+      >
+        {isEffectEnabled ? (
+          <>
+            <div className="pointer-events-none absolute inset-x-[18%] top-1 h-5 rounded-full bg-white/85 blur-md" />
+            <div className="pointer-events-none absolute -bottom-4 left-4 right-4 h-8 rounded-full bg-black/30 blur-xl" />
+            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.35),transparent_42%,transparent_58%,rgba(15,23,42,0.12)_100%)]" />
+          </>
+        ) : null}
+        <img src={logoUrl} alt={tenant.businessName} className={`relative h-full w-full object-cover ${innerClass}`} />
+      </div>
     </div>
   );
 }
