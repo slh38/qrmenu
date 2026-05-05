@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
-import { request } from "../lib/api";
+import { useEffect, useMemo, useState } from "react";
+import { request, resolveAssetUrl } from "../lib/api";
 import { themeOptions } from "../lib/themeOptions";
+
+const ROOT_DOMAIN = (import.meta.env.VITE_ROOT_DOMAIN || "").toLowerCase();
 
 const initialForm = {
   businessName: "",
@@ -44,6 +46,16 @@ export default function Dashboard() {
     localStorage.setItem("qrmenu_tenant", JSON.stringify(nextTenant));
   };
 
+  const logoUrl = resolveAssetUrl(selectedFiles.logo.preview || tenant?.logoUrl || "");
+  const coverUrl = resolveAssetUrl(selectedFiles.cover.preview || tenant?.coverImageUrl || "");
+  const publicMenuUrl = useMemo(() => {
+    if (!tenant?.slug) {
+      return "";
+    }
+
+    return ROOT_DOMAIN ? `https://${tenant.slug}.${ROOT_DOMAIN}` : `/menu/${tenant.slug}`;
+  }, [tenant?.slug]);
+
   const loadProfile = async () => {
     try {
       const result = await request("/tenant/me");
@@ -83,7 +95,7 @@ export default function Dashboard() {
         body: JSON.stringify(form),
       });
       syncTenant(result.data.tenant);
-      setMessage("Isletme ayarlari guncellendi.");
+      setMessage("İşletme ayarları güncellendi.");
     } catch (saveError) {
       setError(saveError.message);
     }
@@ -132,17 +144,26 @@ export default function Dashboard() {
           <div className="max-w-2xl">
             <p className="text-sm uppercase tracking-[0.35em] text-blue-100">Kontrol Merkezi</p>
             <h1 className="mt-4 font-display text-4xl font-extrabold tracking-tight sm:text-5xl">
-              {tenant?.businessName || "Isletmeniz"}
+              {tenant?.businessName || "İşletmeniz"}
             </h1>
             <p className="mt-3 max-w-xl text-sm text-white/80 sm:text-base">
-              {tenant?.tagline || "Restoraninizin dijital menusu icin tema, sosyal medya ve vitrin alanlarini yonetin."}
+              {tenant?.tagline || "Restoranınızın dijital menüsü için tema, sosyal medya ve vitrin alanlarını yönetin."}
             </p>
-            <p className="mt-4 text-sm text-white/70">Slug: /menu/{tenant?.slug || "hazirlaniyor"}</p>
+            {publicMenuUrl ? (
+              <a
+                href={publicMenuUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-white/90 underline decoration-white/30 underline-offset-4 hover:text-white"
+              >
+                Menü kısayolu: {publicMenuUrl.replace(/^https?:\/\//, "")}
+              </a>
+            ) : null}
           </div>
 
           <div className="flex items-center gap-4">
-            {tenant?.logoUrl ? (
-              <img src={tenant.logoUrl} alt={tenant.businessName} className="h-20 w-20 rounded-[1.75rem] object-cover shadow-soft" />
+            {logoUrl ? (
+              <img src={logoUrl} alt={tenant?.businessName || "Logo"} className="h-20 w-20 rounded-[1.75rem] object-cover shadow-soft" />
             ) : (
               <div className="flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-white/15 text-2xl font-bold">
                 {tenant?.businessName?.slice(0, 1) || "Q"}
@@ -158,19 +179,20 @@ export default function Dashboard() {
 
       <section className="grid gap-4 md:grid-cols-3">
         <div className="glass-panel p-6 shadow-soft">
-          <p className="text-sm text-slate-500">Kategori sayisi</p>
+          <p className="text-sm text-slate-500">Kategori sayısı</p>
           <p className="mt-3 font-display text-5xl font-extrabold text-ink">{stats.categoryCount}</p>
         </div>
         <div className="glass-panel p-6 shadow-soft">
-          <p className="text-sm text-slate-500">Urun sayisi</p>
+          <p className="text-sm text-slate-500">Ürün sayısı</p>
           <p className="mt-3 font-display text-5xl font-extrabold text-ink">{stats.menuItemCount}</p>
         </div>
-        <div className="glass-panel p-6 shadow-soft">
-          <p className="text-sm text-slate-500">Gorsel durum</p>
-          <p className="mt-3 text-lg font-semibold text-ink">
-            {tenant?.coverImageUrl ? "Kapak hazir" : "Kapak yuklenmedi"}
-          </p>
-          <p className="mt-2 text-sm text-slate-500">Public menu deneyimini kapak gorseliyle guclendirebilirsin.</p>
+        <div className="glass-panel overflow-hidden p-0 shadow-soft">
+          <div className="p-6">
+            <p className="text-sm text-slate-500">Görsel durum</p>
+            <p className="mt-3 text-lg font-semibold text-ink">{coverUrl ? "Kapak hazır" : "Kapak yüklenmedi"}</p>
+            <p className="mt-2 text-sm text-slate-500">Public menu deneyimini kapak görseliyle güçlendirebilirsin.</p>
+          </div>
+          {coverUrl ? <img src={coverUrl} alt="Kapak görseli" className="h-36 w-full object-cover" /> : null}
         </div>
       </section>
 
@@ -178,7 +200,7 @@ export default function Dashboard() {
         <section className="glass-panel p-6 shadow-soft">
           <div className="flex flex-col gap-2">
             <h2 className="font-display text-3xl font-extrabold text-ink">Temel Bilgiler</h2>
-            <p className="text-sm text-slate-600">Baslik, aciklama, renk ve iletisim bilgileri menunun ust alaninda kullanilir.</p>
+            <p className="text-sm text-slate-600">Başlık, açıklama, renk ve iletişim bilgileri menünün üst alanında kullanılır.</p>
           </div>
 
           <div className="mt-6 grid gap-4 md:grid-cols-2">
@@ -186,7 +208,7 @@ export default function Dashboard() {
               type="text"
               value={form.businessName}
               onChange={(event) => setForm({ ...form, businessName: event.target.value })}
-              placeholder="Isletme adi"
+              placeholder="İşletme adı"
               className="rounded-2xl border border-blue-100 bg-white px-4 py-3 outline-none focus:border-blue-400"
             />
             <input
@@ -199,7 +221,7 @@ export default function Dashboard() {
             <textarea
               value={form.tagline}
               onChange={(event) => setForm({ ...form, tagline: event.target.value })}
-              placeholder="Kisa slogan veya aciklama"
+              placeholder="Kısa slogan veya açıklama"
               className="min-h-24 rounded-2xl border border-blue-100 bg-white px-4 py-3 outline-none focus:border-blue-400 md:col-span-2"
             />
             <textarea
@@ -231,24 +253,24 @@ export default function Dashboard() {
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-slate-900">Logo</p>
                     <p className="mt-1 truncate text-xs text-slate-500">
-                      {selectedFiles.logo.name || (tenant?.logoUrl ? "Mevcut logo yuklu" : "Henuz logo secilmedi")}
+                      {selectedFiles.logo.name || (logoUrl ? "Mevcut logo yüklü" : "Henüz logo seçilmedi")}
                     </p>
                   </div>
                   <label className="cursor-pointer rounded-2xl bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700 transition hover:bg-blue-100">
-                    {uploading.logo ? "Yukleniyor..." : "Logo Sec"}
+                    {uploading.logo ? "Yükleniyor..." : "Logo Seç"}
                     <input
                       type="file"
                       accept="image/*"
-                      onChange={(event) => uploadAsset(event, "logo", "/tenant/me/logo", "Logo guncellendi.")}
+                      onChange={(event) => uploadAsset(event, "logo", "/tenant/me/logo", "Logo güncellendi.")}
                       className="hidden"
                     />
                   </label>
                 </div>
                 <div className="mt-4 overflow-hidden rounded-[1.25rem] border border-slate-100 bg-slate-50">
-                  {selectedFiles.logo.preview || tenant?.logoUrl ? (
-                    <img src={selectedFiles.logo.preview || tenant.logoUrl} alt="Logo preview" className="h-40 w-full object-cover" />
+                  {logoUrl ? (
+                    <img src={logoUrl} alt="Logo önizleme" className="h-40 w-full object-cover" />
                   ) : (
-                    <div className="flex h-40 items-center justify-center text-sm text-slate-400">Logo onizlemesi burada gorunur</div>
+                    <div className="flex h-40 items-center justify-center text-sm text-slate-400">Logo önizlemesi burada görünür</div>
                   )}
                 </div>
               </div>
@@ -256,30 +278,26 @@ export default function Dashboard() {
               <div className="rounded-[1.5rem] border border-blue-100 bg-white p-4">
                 <div className="flex items-center justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-slate-900">Kapak Gorseli</p>
+                    <p className="text-sm font-semibold text-slate-900">Kapak Görseli</p>
                     <p className="mt-1 truncate text-xs text-slate-500">
-                      {selectedFiles.cover.name || (tenant?.coverImageUrl ? "Mevcut kapak yuklu" : "Henuz kapak secilmedi")}
+                      {selectedFiles.cover.name || (coverUrl ? "Mevcut kapak yüklü" : "Henüz kapak seçilmedi")}
                     </p>
                   </div>
                   <label className="cursor-pointer rounded-2xl bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700 transition hover:bg-blue-100">
-                    {uploading.cover ? "Yukleniyor..." : "Kapak Sec"}
+                    {uploading.cover ? "Yükleniyor..." : "Kapak Seç"}
                     <input
                       type="file"
                       accept="image/*"
-                      onChange={(event) => uploadAsset(event, "cover", "/tenant/me/cover", "Kapak gorseli guncellendi.")}
+                      onChange={(event) => uploadAsset(event, "cover", "/tenant/me/cover", "Kapak görseli güncellendi.")}
                       className="hidden"
                     />
                   </label>
                 </div>
                 <div className="mt-4 overflow-hidden rounded-[1.25rem] border border-slate-100 bg-slate-50">
-                  {selectedFiles.cover.preview || tenant?.coverImageUrl ? (
-                    <img
-                      src={selectedFiles.cover.preview || tenant.coverImageUrl}
-                      alt="Cover preview"
-                      className="h-40 w-full object-cover"
-                    />
+                  {coverUrl ? (
+                    <img src={coverUrl} alt="Kapak önizleme" className="h-40 w-full object-cover" />
                   ) : (
-                    <div className="flex h-40 items-center justify-center text-sm text-slate-400">Kapak onizlemesi burada gorunur</div>
+                    <div className="flex h-40 items-center justify-center text-sm text-slate-400">Kapak önizlemesi burada görünür</div>
                   )}
                 </div>
               </div>
@@ -289,8 +307,8 @@ export default function Dashboard() {
 
         <section className="glass-panel p-6 shadow-soft">
           <div className="flex flex-col gap-2">
-            <h2 className="font-display text-3xl font-extrabold text-ink">Tema Secimi</h2>
-            <p className="text-sm text-slate-600">Restoranin menuyu hangi sunum diliyle gosterecegini sec.</p>
+            <h2 className="font-display text-3xl font-extrabold text-ink">Tema Seçimi</h2>
+            <p className="text-sm text-slate-600">Restoranın menüyü hangi sunum diliyle göstereceğini seç.</p>
           </div>
 
           <div className="mt-6 grid gap-4 lg:grid-cols-3">
@@ -329,7 +347,7 @@ export default function Dashboard() {
         <section className="glass-panel p-6 shadow-soft">
           <div className="flex flex-col gap-2">
             <h2 className="font-display text-3xl font-extrabold text-ink">Sosyal Medya ve Linkler</h2>
-            <p className="text-sm text-slate-600">Ust alanda ikon olarak gosterilir. Bos birakilan alanlar gosterilmez.</p>
+            <p className="text-sm text-slate-600">Üst alanda ikon olarak gösterilir. Boş bırakılan alanlar gösterilmez.</p>
           </div>
 
           <div className="mt-6 grid gap-4 md:grid-cols-2">
@@ -364,7 +382,7 @@ export default function Dashboard() {
           type="submit"
           className="w-full rounded-[1.5rem] bg-[#173b8f] px-4 py-4 text-sm font-semibold text-white transition hover:bg-[#102c6e]"
         >
-          Tum Ayarlari Kaydet
+          Tüm Ayarları Kaydet
         </button>
       </form>
     </div>

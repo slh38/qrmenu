@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { API_URL } from "../lib/api";
+import { API_URL, resolveAssetUrl } from "../lib/api";
 
 const socialConfig = {
   instagram: {
@@ -44,7 +44,13 @@ function getVisibleSocials(socialLinks = {}) {
 }
 
 function getCategoryImage(category, tenant) {
-  return category.imageUrl || category.items.find((item) => item.imageUrl)?.imageUrl || tenant.coverImageUrl || tenant.logoUrl || "";
+  return (
+    resolveAssetUrl(category.imageUrl) ||
+    resolveAssetUrl(category.items.find((item) => item.imageUrl)?.imageUrl || "") ||
+    resolveAssetUrl(tenant.coverImageUrl || "") ||
+    resolveAssetUrl(tenant.logoUrl || "") ||
+    ""
+  );
 }
 
 function formatPrice(item) {
@@ -66,7 +72,9 @@ function ContactIcon({ dark = false }) {
 }
 
 function LogoBadge({ tenant, dark = false }) {
-  if (!tenant.logoUrl) {
+  const logoUrl = resolveAssetUrl(tenant.logoUrl || "");
+
+  if (!logoUrl) {
     return null;
   }
 
@@ -81,7 +89,7 @@ function LogoBadge({ tenant, dark = false }) {
 
   return (
     <div className={`mx-auto mb-6 flex h-28 w-28 items-center justify-center rounded-[2rem] bg-white/95 p-2 backdrop-blur sm:h-32 sm:w-32 ${effectClass}`}>
-      <img src={tenant.logoUrl} alt={tenant.businessName} className="h-full w-full rounded-[1.5rem] object-cover" />
+      <img src={logoUrl} alt={tenant.businessName} className="h-full w-full rounded-[1.5rem] object-cover" />
     </div>
   );
 }
@@ -126,7 +134,10 @@ function PageHeader({ tenant, socials, theme, onContactClick }) {
 
   return (
     <header className={`relative overflow-hidden ${theme === "editorial" ? "bg-[#111827]" : "bg-[#101828]"} text-white`}>
-      <div className="absolute inset-0 bg-cover bg-center opacity-35" style={{ backgroundImage: `url(${tenant.coverImageUrl || tenant.logoUrl || ""})` }} />
+      <div
+        className="absolute inset-0 bg-cover bg-center opacity-35"
+        style={{ backgroundImage: `url(${resolveAssetUrl(tenant.coverImageUrl || tenant.logoUrl || "")})` }}
+      />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(16,24,40,0.28),rgba(16,24,40,0.92))]" />
       <div className="relative mx-auto max-w-6xl px-4 pb-10 pt-10 sm:px-6">
         <LogoBadge tenant={tenant} dark />
@@ -245,7 +256,7 @@ function ItemList({ items, theme }) {
           <article key={item._id} className="rounded-[1.6rem] border border-slate-200 bg-white p-3 shadow-sm">
             <div className="flex gap-3 sm:gap-5">
               {item.imageUrl ? (
-                <img src={item.imageUrl} alt={item.name} loading="lazy" className="h-24 w-24 rounded-[1.2rem] object-cover sm:h-28 sm:w-28" />
+                <img src={resolveAssetUrl(item.imageUrl)} alt={item.name} loading="lazy" className="h-24 w-24 rounded-[1.2rem] object-cover sm:h-28 sm:w-28" />
               ) : (
                 <div className="h-24 w-24 rounded-[1.2rem] bg-slate-100 sm:h-28 sm:w-28" />
               )}
@@ -274,7 +285,7 @@ function ItemList({ items, theme }) {
           <article key={item._id} className="rounded-[1.8rem] border border-[#e4d8ca] bg-[#fffdf9] p-4 shadow-sm">
             <div className="flex gap-4">
               {item.imageUrl ? (
-                <img src={item.imageUrl} alt={item.name} loading="lazy" className="h-20 w-20 rounded-[1.1rem] object-cover sm:h-24 sm:w-24" />
+                <img src={resolveAssetUrl(item.imageUrl)} alt={item.name} loading="lazy" className="h-20 w-20 rounded-[1.1rem] object-cover sm:h-24 sm:w-24" />
               ) : (
                 <div className="h-20 w-20 rounded-[1.1rem] bg-[#efe6da] sm:h-24 sm:w-24" />
               )}
@@ -301,7 +312,7 @@ function ItemList({ items, theme }) {
       {items.map((item) => (
         <article key={item._id} className="overflow-hidden rounded-[2rem] border border-white/70 bg-white shadow-soft">
           {item.imageUrl ? (
-            <img src={item.imageUrl} alt={item.name} loading="lazy" className="h-52 w-full object-cover" />
+            <img src={resolveAssetUrl(item.imageUrl)} alt={item.name} loading="lazy" className="h-52 w-full object-cover" />
           ) : (
             <div className="h-52 bg-gradient-to-br from-slate-100 to-slate-200" />
           )}
