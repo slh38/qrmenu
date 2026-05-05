@@ -39,6 +39,7 @@ function normalizeSlugInput(value) {
     .replace(/ş/g, "s")
     .replace(/ö/g, "o")
     .replace(/ç/g, "c")
+    .replace(/[._]/g, "-")
     .replace(/[^a-z0-9\s-]/g, "")
     .trim()
     .replace(/\s+/g, "-")
@@ -270,6 +271,9 @@ export default function Dashboard() {
             </label>
             <p className="text-sm text-slate-500">
               Yeni adres önizlemesi: <span className="font-semibold text-slate-700">{slugPreview}</span>
+            </p>
+            <p className="text-xs text-slate-500">
+              Bosluk, <code>.</code> ve <code>_</code> otomatik olarak <code>-</code> formatina cevrilir.
             </p>
             <div className="rounded-2xl bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">
               Subdomain değiştiğinde eski QR kodlar ve eski menü linkleri çalışmaz. Yeni QR kodunu tekrar üretmen gerekir.

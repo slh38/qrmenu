@@ -20,6 +20,7 @@ const normalizeTurkish = (value) =>
 
 const slugify = (value) =>
   normalizeTurkish(value)
+    .replace(/[._]/g, "-")
     .replace(/[^a-z0-9\s-]/g, "")
     .trim()
     .replace(/\s+/g, "-")
