@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { request, resolveAssetUrl } from "../lib/api";
+import { themeOptions } from "../lib/themeOptions";
 
 const ROOT_DOMAIN = (import.meta.env.VITE_ROOT_DOMAIN || "").toLowerCase();
 
