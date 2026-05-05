@@ -79,32 +79,33 @@ function LogoBadge({ tenant, dark = false }) {
   }
 
   const isEffectEnabled = tenant.logoEffectEnabled !== false;
-  const shellClass = isEffectEnabled
+  const sizeClass =
+    tenant.logoSize === "sm"
+      ? "h-20 w-20 sm:h-24 sm:w-24"
+      : tenant.logoSize === "lg"
+        ? "h-32 w-32 sm:h-40 sm:w-40"
+        : "h-24 w-24 sm:h-32 sm:w-32";
+  const effectClass = isEffectEnabled
     ? dark
-      ? "shadow-[0_26px_90px_rgba(0,0,0,0.58),0_12px_24px_rgba(255,255,255,0.08)_inset] ring-1 ring-white/15"
-      : "shadow-[0_24px_70px_rgba(37,99,235,0.26),0_10px_22px_rgba(255,255,255,0.92)_inset] ring-1 ring-slate-200"
-    : dark
-      ? "shadow-soft ring-1 ring-white/10"
-      : "shadow-sm ring-1 ring-slate-200";
-  const innerClass = isEffectEnabled
-    ? "scale-[0.94] rounded-[1.6rem] shadow-[0_18px_28px_rgba(15,23,42,0.26)]"
-    : "rounded-[1.5rem]";
+      ? "drop-shadow-[0_18px_34px_rgba(0,0,0,0.65)]"
+      : "drop-shadow-[0_16px_28px_rgba(37,99,235,0.28)]"
+    : "";
+  const tiltClass = isEffectEnabled ? "rotate-[-4deg] hover:rotate-0" : "";
 
   return (
-    <div className="mx-auto mb-6 [perspective:1200px]">
-      <div
-        className={`relative flex h-28 w-28 items-center justify-center overflow-hidden rounded-[2rem] bg-white/95 p-2 backdrop-blur transition-transform duration-500 sm:h-32 sm:w-32 ${shellClass} ${
-          isEffectEnabled ? "rotate-x-[14deg] rotate-y-[-12deg] hover:rotate-y-[-6deg] hover:rotate-x-[10deg]" : ""
-        }`}
-      >
+    <div className="mb-6 flex w-full justify-center">
+      <div className={`relative transition-transform duration-500 ${tiltClass}`}>
         {isEffectEnabled ? (
           <>
-            <div className="pointer-events-none absolute inset-x-[18%] top-1 h-5 rounded-full bg-white/85 blur-md" />
-            <div className="pointer-events-none absolute -bottom-4 left-4 right-4 h-8 rounded-full bg-black/30 blur-xl" />
-            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.35),transparent_42%,transparent_58%,rgba(15,23,42,0.12)_100%)]" />
+            <div className="pointer-events-none absolute inset-x-3 -bottom-2 h-6 rounded-full bg-black/35 blur-xl" />
+            <div className="pointer-events-none absolute inset-x-[22%] top-1 z-10 h-3 rounded-full bg-white/60 blur-md" />
           </>
         ) : null}
-        <img src={logoUrl} alt={tenant.businessName} className={`relative h-full w-full object-cover ${innerClass}`} />
+        <img
+          src={logoUrl}
+          alt={tenant.businessName}
+          className={`relative z-20 ${sizeClass} ${effectClass} rounded-[1.8rem] object-cover transition-transform duration-500 ${isEffectEnabled ? "hover:scale-[1.03]" : ""}`}
+        />
       </div>
     </div>
   );

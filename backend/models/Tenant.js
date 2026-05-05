@@ -61,6 +61,11 @@ const tenantSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    logoSize: {
+      type: String,
+      enum: ["sm", "md", "lg"],
+      default: "md",
+    },
     tagline: {
       type: String,
       default: "",

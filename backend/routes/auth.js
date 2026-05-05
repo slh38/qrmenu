@@ -22,6 +22,7 @@ const serializeTenant = (tenant) => ({
   logoUrl: tenant.logoUrl,
   coverImageUrl: tenant.coverImageUrl,
   logoEffectEnabled: tenant.logoEffectEnabled,
+  logoSize: tenant.logoSize,
   tagline: tenant.tagline,
   theme: tenant.theme,
   primaryColor: tenant.primaryColor,

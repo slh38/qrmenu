@@ -12,6 +12,7 @@ const initialForm = {
   tagline: "",
   theme: "showcase",
   logoEffectEnabled: true,
+  logoSize: "md",
   socialLinks: {
     instagram: "",
     facebook: "",
@@ -70,6 +71,7 @@ export default function Dashboard() {
         tagline: nextTenant.tagline || "",
         theme: nextTenant.theme || "showcase",
         logoEffectEnabled: nextTenant.logoEffectEnabled !== false,
+        logoSize: nextTenant.logoSize || "md",
         socialLinks: {
           ...initialForm.socialLinks,
           ...(nextTenant.socialLinks || {}),
@@ -247,6 +249,15 @@ export default function Dashboard() {
               />
               Logo 3 boyutlu efekt kullan
             </label>
+            <select
+              value={form.logoSize}
+              onChange={(event) => setForm({ ...form, logoSize: event.target.value })}
+              className="rounded-2xl border border-blue-100 bg-white px-4 py-3 text-sm outline-none focus:border-blue-400"
+            >
+              <option value="sm">Logo boyutu: Kucuk</option>
+              <option value="md">Logo boyutu: Orta</option>
+              <option value="lg">Logo boyutu: Buyuk</option>
+            </select>
             <div className="grid gap-4 md:col-span-2 sm:grid-cols-2">
               <div className="rounded-[1.5rem] border border-blue-100 bg-white p-4">
                 <div className="flex items-center justify-between gap-3">
