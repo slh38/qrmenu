@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get("/generate", async (req, res) => {
   try {
-    const tenant = await Tenant.findById(req.tenantId).select("slug");
+    const tenant = await Tenant.findById(req.tenantId).select("slug primaryColor logoUrl businessName");
     if (!tenant) {
       return res.status(404).json(createResponse(false, "İşletme bulunamadı.", {}));
     }
@@ -16,12 +16,16 @@ router.get("/generate", async (req, res) => {
     const qrCode = await QRCode.toDataURL(publicUrl, {
       width: 300,
       margin: 2,
+      errorCorrectionLevel: "H",
     });
 
     return res.json(
       createResponse(true, "QR kod üretildi.", {
         url: publicUrl,
         qrCode,
+        primaryColor: tenant.primaryColor || "#2563eb",
+        logoUrl: tenant.logoUrl || "",
+        businessName: tenant.businessName || "",
       })
     );
   } catch (error) {
