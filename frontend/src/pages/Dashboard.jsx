@@ -64,10 +64,10 @@ function TrendBars({ trend }) {
 
   return (
     <div className="mt-4">
+      <p className="mb-3 text-xs font-medium text-slate-500">Gunluk goruntulenme dagilimi</p>
       <div className="flex h-24 items-end gap-2">
         {trend.map((item) => (
-          <div key={item.day} className="flex flex-1 flex-col items-center gap-2">
-            <div className="text-[11px] font-semibold text-slate-500">{item.count}</div>
+          <div key={item.day} className="flex flex-1 flex-col items-center gap-2" title={`${item.day}: ${item.count}`}>
             <div className="flex h-16 w-full items-end">
               <div
                 className="w-full rounded-t-2xl bg-gradient-to-t from-[#173b8f] to-[#60a5fa]"
@@ -263,9 +263,9 @@ export default function Dashboard() {
                   {tenant?.businessName?.slice(0, 1) || "Q"}
                 </div>
               )}
-              <div className="rounded-[1.5rem] border border-white/15 bg-white/10 px-4 py-3 backdrop-blur">
+              <div className="min-w-[152px] rounded-[1.5rem] border border-white/15 bg-white/10 px-4 py-3 backdrop-blur">
                 <p className="text-xs uppercase tracking-[0.3em] text-white/70">Aktif Tema</p>
-                <p className="mt-2 text-lg font-semibold">{selectedTheme?.name || "Showcase"}</p>
+                <p className="mt-2 break-words text-base font-semibold leading-tight sm:text-lg">{selectedTheme?.name || "Showcase"}</p>
               </div>
             </div>
           </div>
