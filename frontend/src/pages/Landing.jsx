@@ -245,15 +245,12 @@ export default function Landing() {
                   <p className="mt-6 text-center text-lg font-extrabold leading-snug tracking-tight">Demo Menu Icin Okutun</p>
                 </div>
 
-                <div className="mx-auto w-full max-w-[336px] lg:mr-20 rounded-[3rem] border-[10px] border-slate-950 bg-white px-5 pb-6 pt-6 shadow-[0_34px_80px_rgba(15,23,42,0.22)]">
-                  <div className="mx-auto h-6 w-36 rounded-full bg-slate-950" />
-                  <div className="mt-5 overflow-hidden rounded-[2.2rem] border border-slate-200 bg-slate-100">
-                    <img
-                      src="/menu-phone.png"
-                      alt="JokerQRMenu telefon menu gorunumu"
-                      className="h-auto max-h-[680px] w-full object-contain object-top"
-                    />
-                  </div>
+                <div className="mx-auto w-full max-w-[360px] lg:mr-20">
+                  <img
+                    src="/menu-phone.png"
+                    alt="JokerQRMenu telefon menu gorunumu"
+                    className="h-auto max-h-[720px] w-full object-contain object-top drop-shadow-[0_30px_65px_rgba(15,23,42,0.22)]"
+                  />
                 </div>
               </div>
             </div>
