@@ -361,11 +361,11 @@ export default function Landing() {
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.32em] text-[#2563eb]">Iletisim</p>
                 <h2 className="mt-4 font-display text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-                  Demo isteyin, birlikte kurulum planlayalim
+                  Sorulariniz icin bizimle hemen iletisime gecin
                 </h2>
                 <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600">
-                  JokerQRMenu ile restoraniniza uygun dijital menu deneyimini birlikte sekillendirebiliriz. Sonraki
-                  asamada alt sayfalari ve fiyat yapisini da genisletiriz.
+                  JokerQRMenu ile restoraniniz icin en uygun dijital menu yapisini belirleyebilir, kurulum sureci ve
+                  kullanim detaylari hakkinda hizli destek alabilirsiniz.
                 </p>
               </div>
               <div className="flex flex-col gap-3 sm:flex-row">
