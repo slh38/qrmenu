@@ -33,7 +33,7 @@ const steps = [
 
 const pricing = [
   "Sinirsiz kategori ve urun yonetimi",
-  "QR kod olusturma ve public menu yayini",
+  "QR kod olusturma ve dijital menu yayini",
   "Tema secimi, logo, kapak ve sosyal medya destegi",
 ];
 
@@ -261,7 +261,7 @@ export default function Landing() {
           <SectionTitle
             eyebrow="Ozellikler"
             title="Restoraniniza uygun hizli ve profesyonel QR menu altyapisi"
-            text="JokerQRMenu; kategori yonetimi, tema secenekleri, sosyal medya linkleri ve mobil odakli public menu deneyimiyle isletmenizi dijitale tasir."
+            text="JokerQRMenu; kategori yonetimi, tema secenekleri, sosyal medya linkleri ve mobil odakli dijital menu deneyimiyle isletmenizi dijitale tasir."
           />
 
           <div className="mt-10 grid gap-5 lg:grid-cols-3">
@@ -325,8 +325,8 @@ export default function Landing() {
                 <p className="text-sm font-semibold uppercase tracking-[0.32em] text-blue-100">Fiyatlar</p>
                 <h2 className="mt-4 font-display text-4xl font-extrabold tracking-tight sm:text-5xl">Hemen kullanmaya baslayin</h2>
                 <p className="mt-5 max-w-xl text-base leading-8 text-white/80">
-                  Baslangic icin tek plan yeterli. Sonraki sayfalarda paketleri detaylandiririz; simdilik amac hizli cikis
-                  ve guclu bir ilk izlenim.
+                  Restoraniniza profesyonel bir dijital menu deneyimi kazandirin. Kurulumu hizli, yonetimi kolay ve
+                  musterileriniz icin her zaman guncel bir menu sunumu elde edin.
                 </p>
               </div>
 
