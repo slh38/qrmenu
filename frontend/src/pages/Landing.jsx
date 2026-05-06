@@ -99,10 +99,7 @@ export default function Landing() {
       "description",
       "JokerQRMenu ile restoraniniz icin mobil uyumlu, modern ve hizli yonetilebilen dijital QR menu olusturun."
     );
-    ensureMeta(
-      "keywords",
-      "qr menu, dijital menu, restoran qr menu, cafe qr menu, jokerqrmenu"
-    );
+    ensureMeta("keywords", "qr menu, dijital menu, restoran qr menu, cafe qr menu, jokerqrmenu");
   }, []);
 
   return (
@@ -196,54 +193,23 @@ export default function Landing() {
             <div className="relative flex items-center justify-center">
               <div className="relative w-full max-w-[620px]">
                 <div className="absolute right-0 top-14 hidden w-56 rounded-[2rem] bg-gradient-to-br from-[#173b8f] to-[#2563eb] p-5 text-white shadow-[0_26px_60px_rgba(23,59,143,0.34)] lg:block">
-                  <h3 className="text-3xl font-extrabold tracking-tight">JokerQRMenu</h3>
+                  <h3 className="text-[2rem] font-extrabold tracking-tight leading-none">JokerQRMenu</h3>
                   <div className="mt-6 rounded-[1.6rem] bg-white p-4">
-                    <div className="flex aspect-square w-full items-center justify-center rounded-[1.1rem] border border-slate-200 bg-[#f8fbff] p-4 text-center">
-                      <div>
-                        <div className="mx-auto h-16 w-16 rounded-[1.2rem] border-2 border-dashed border-[#2563eb]/35 bg-blue-50" />
-                        <p className="mt-4 text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Demo QR Alani</p>
-                      </div>
+                    <div className="overflow-hidden rounded-[1.1rem] border border-slate-200 bg-[#f8fbff] p-3">
+                      <img src="/joker-qr.png" alt="JokerQRMenu demo qr" className="aspect-square w-full rounded-[0.95rem] object-cover" />
                     </div>
                   </div>
-                  <p className="mt-6 text-center text-2xl font-extrabold leading-tight">MENU ICIN OKUTUN</p>
+                  <p className="mt-6 text-center text-lg font-extrabold leading-snug tracking-tight">Demo Menu Icin Okutun</p>
                 </div>
 
                 <div className="mx-auto w-full max-w-[360px] rounded-[3rem] border-[10px] border-slate-950 bg-white px-5 pb-7 pt-6 shadow-[0_34px_80px_rgba(15,23,42,0.22)]">
                   <div className="mx-auto h-6 w-36 rounded-full bg-slate-950" />
-                  <div className="mt-6 text-center">
-                    <p className="font-display text-3xl font-extrabold text-slate-950">
-                      Joker<span className="text-[#2563eb]">QRMenu</span>
-                    </p>
-                    <p className="mt-2 text-sm text-slate-500">Lezzetli anlar, hizli erisim</p>
-                  </div>
-                  <div className="mt-5 flex justify-center gap-3 text-[#2563eb]">
-                    {[1, 2, 3, 4].map((item) => (
-                      <span key={item} className="inline-flex h-10 w-10 rounded-2xl bg-blue-50" />
-                    ))}
-                  </div>
-                  <div className="mt-6 space-y-4">
-                    {[
-                      { category: "BASLANGICLAR", items: [["Bruschetta", "85"], ["Carpaccio", "120"], ["Corba", "65"]] },
-                      { category: "ANA YEMEKLER", items: [["Dana Antrikot", "245"], ["Tavuk Izgara", "165"]] },
-                    ].map((section) => (
-                      <div key={section.category}>
-                        <div className="rounded-2xl bg-[#2563eb] px-4 py-3 text-sm font-bold text-white">{section.category}</div>
-                        <div className="mt-3 space-y-3">
-                          {section.items.map(([name, price]) => (
-                            <div key={name} className="flex items-center justify-between rounded-2xl bg-slate-50 px-3 py-3">
-                              <div className="flex items-center gap-3">
-                                <div className="h-11 w-11 rounded-2xl bg-orange-100" />
-                                <div>
-                                  <p className="text-sm font-bold text-slate-900">{name}</p>
-                                  <p className="text-xs text-slate-500">Gunluk taze icerik</p>
-                                </div>
-                              </div>
-                              <p className="text-sm font-extrabold text-slate-900">₺{price}</p>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
+                  <div className="mt-6 overflow-hidden rounded-[2.2rem] border border-slate-200 bg-slate-100">
+                    <img
+                      src="/demo-menu.png"
+                      alt="JokerQRMenu demo menu gorunumu"
+                      className="h-[620px] w-full object-cover object-top"
+                    />
                   </div>
                 </div>
               </div>
