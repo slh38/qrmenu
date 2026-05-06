@@ -3,6 +3,8 @@ import Layout from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
 import Landing from "./pages/Landing";
 import Categories from "./pages/Categories";
+import AdminLogin from "./pages/AdminLogin";
+import AdminPanel from "./pages/AdminPanel";
 import ForgotPassword from "./pages/ForgotPassword";
 import Login from "./pages/Login";
 import MenuItems from "./pages/MenuItems";
@@ -11,9 +13,14 @@ import QRCodePage from "./pages/QRCode";
 import Register from "./pages/Register";
 import ResetPassword from "./pages/ResetPassword";
 import { getToken } from "./lib/api";
+import { clearAdminToken, getAdminToken } from "./lib/admin";
 
 const ROOT_DOMAIN = (import.meta.env.VITE_ROOT_DOMAIN || "").toLowerCase();
-const RESERVED_HOSTS = new Set(["www", "api"]);
+const RESERVED_HOSTS = new Set(["www", "api", "admin"]);
+
+function isAdminHost(hostname) {
+  return ROOT_DOMAIN ? hostname.toLowerCase() === `admin.${ROOT_DOMAIN}` : false;
+}
 
 function getTenantSubdomain(hostname) {
   if (!ROOT_DOMAIN) {
@@ -37,6 +44,10 @@ function ProtectedRoute({ children }) {
   return getToken() ? children : <Navigate to="/login" replace />;
 }
 
+function AdminProtectedRoute({ children }) {
+  return getAdminToken() ? children : <Navigate to="/login" replace />;
+}
+
 function HomeRoute() {
   const tenantSubdomain = getTenantSubdomain(window.location.hostname);
   return tenantSubdomain ? <PublicMenu forcedSlug={tenantSubdomain} /> : <Landing />;
@@ -48,6 +59,28 @@ function CategoryRoute() {
 }
 
 export default function App() {
+  if (isAdminHost(window.location.hostname)) {
+    const handleAdminLogout = () => {
+      clearAdminToken();
+      window.location.href = "/login";
+    };
+
+    return (
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <AdminProtectedRoute>
+              <AdminPanel onLogout={handleAdminLogout} />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route path="/login" element={<AdminLogin onSuccess={() => (window.location.href = "/")} />} />
+        <Route path="*" element={<Navigate to={getAdminToken() ? "/" : "/login"} replace />} />
+      </Routes>
+    );
+  }
+
   return (
     <Routes>
       <Route path="/" element={<HomeRoute />} />

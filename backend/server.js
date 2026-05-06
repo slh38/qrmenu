@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
 const authMiddleware = require("./middleware/auth");
+const adminRoutes = require("./routes/admin");
 const authRoutes = require("./routes/auth");
 const tenantRoutes = require("./routes/tenant");
 const categoryRoutes = require("./routes/category");
@@ -26,6 +27,7 @@ app.get("/api/health", (_req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
 app.use("/api/public", publicMenuRoutes);
 app.use("/api/tenant", authMiddleware, tenantRoutes);
 app.use("/api/categories", authMiddleware, categoryRoutes);

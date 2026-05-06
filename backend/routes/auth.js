@@ -27,6 +27,7 @@ const serializeTenant = (tenant) => ({
   theme: tenant.theme,
   primaryColor: tenant.primaryColor,
   socialLinks: tenant.socialLinks,
+  isActive: tenant.isActive,
 });
 
 function buildResetUrl(token) {
@@ -84,6 +85,10 @@ router.post("/login", async (req, res) => {
     const tenant = await Tenant.findOne({ email: email.toLowerCase() });
     if (!tenant) {
       return res.status(401).json(createResponse(false, "Geçersiz giriş bilgileri.", {}));
+    }
+
+    if (!tenant.isActive) {
+      return res.status(403).json(createResponse(false, "İşletme hesabınız geçici olarak pasif durumda.", {}));
     }
 
     const isPasswordValid = await bcrypt.compare(password, tenant.password);

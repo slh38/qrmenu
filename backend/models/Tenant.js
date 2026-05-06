@@ -95,6 +95,10 @@ const tenantSchema = new mongoose.Schema(
       type: String,
       default: "#2563eb",
     },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
     socialLinks: {
       type: socialLinkSchema,
       default: () => ({}),

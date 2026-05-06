@@ -22,9 +22,7 @@ async function trackMenuView(tenant) {
   }
 
   tenant.menuViewCount = (tenant.menuViewCount || 0) + 1;
-  tenant.menuViewHistory = history
-    .sort((left, right) => left.day.localeCompare(right.day))
-    .slice(-30);
+  tenant.menuViewHistory = history.sort((left, right) => left.day.localeCompare(right.day)).slice(-30);
 
   await tenant.save();
 }
@@ -32,10 +30,10 @@ async function trackMenuView(tenant) {
 router.get("/menu/:slug", async (req, res) => {
   try {
     const tenant = await Tenant.findOne({ slug: req.params.slug }).select(
-      "businessName logoUrl coverImageUrl logoEffectEnabled logoSize tagline theme primaryColor address phone slug socialLinks menuViewCount menuViewHistory"
+      "businessName logoUrl coverImageUrl logoEffectEnabled logoSize tagline theme primaryColor address phone slug socialLinks menuViewCount menuViewHistory isActive"
     );
 
-    if (!tenant) {
+    if (!tenant || !tenant.isActive) {
       return res.status(404).json(createResponse(false, "Menü bulunamadı.", {}));
     }
 
@@ -66,6 +64,7 @@ router.get("/menu/:slug", async (req, res) => {
       name: category.name,
       description: category.description,
       order: category.order,
+      imageUrl: category.imageUrl,
       items: groupedItems[String(category._id)] || [],
     }));
 
