@@ -235,8 +235,8 @@ export default function Landing() {
 
             <div className="relative flex items-center justify-center">
               <div className="relative w-full max-w-[620px]">
-                <div className="absolute right-0 top-14 hidden w-56 rounded-[2rem] bg-gradient-to-br from-[#173b8f] to-[#2563eb] p-5 text-white shadow-[0_26px_60px_rgba(23,59,143,0.34)] lg:block">
-                  <h3 className="text-[2rem] font-extrabold tracking-tight leading-none">JokerQRMenu</h3>
+                <div className="absolute right-0 top-16 hidden w-52 rounded-[2rem] bg-gradient-to-br from-[#173b8f] to-[#2563eb] p-5 text-white shadow-[0_26px_60px_rgba(23,59,143,0.34)] lg:block">
+                  <h3 className="text-[1.72rem] font-extrabold tracking-tight leading-none">JokerQRMenu</h3>
                   <div className="mt-6 rounded-[1.6rem] bg-white p-4">
                     <div className="overflow-hidden rounded-[1.1rem] border border-slate-200 bg-[#f8fbff] p-3">
                       <img src="/joker-qr.png" alt="JokerQRMenu demo qr" className="aspect-square w-full rounded-[0.95rem] object-cover" />
@@ -245,13 +245,13 @@ export default function Landing() {
                   <p className="mt-6 text-center text-lg font-extrabold leading-snug tracking-tight">Demo Menu Icin Okutun</p>
                 </div>
 
-                <div className="mx-auto w-full max-w-[360px] rounded-[3rem] border-[10px] border-slate-950 bg-white px-5 pb-7 pt-6 shadow-[0_34px_80px_rgba(15,23,42,0.22)]">
+                <div className="mx-auto w-full max-w-[336px] lg:mr-20 rounded-[3rem] border-[10px] border-slate-950 bg-white px-5 pb-6 pt-6 shadow-[0_34px_80px_rgba(15,23,42,0.22)]">
                   <div className="mx-auto h-6 w-36 rounded-full bg-slate-950" />
-                  <div className="mt-6 overflow-hidden rounded-[2.2rem] border border-slate-200 bg-slate-100">
+                  <div className="mt-5 overflow-hidden rounded-[2.2rem] border border-slate-200 bg-slate-100">
                     <img
-                      src="/demo-menu.png"
-                      alt="JokerQRMenu demo menu gorunumu"
-                      className="h-[620px] w-full object-cover object-top"
+                      src="/menu-phone.png"
+                      alt="JokerQRMenu telefon menu gorunumu"
+                      className="h-auto max-h-[680px] w-full object-contain object-top"
                     />
                   </div>
                 </div>
