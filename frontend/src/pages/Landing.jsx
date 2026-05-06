@@ -37,6 +37,49 @@ const pricing = [
   "Tema secimi, logo, kapak ve sosyal medya destegi",
 ];
 
+const themeCards = [
+  {
+    title: "Showcase",
+    text: "Gorsel agirlikli kategori vitrini ve guclu kapak sunumu.",
+    previewClass: "bg-gradient-to-br from-[#173b8f] via-[#2563eb] to-[#78a9ff]",
+    preview: (
+      <div className="space-y-3 p-4">
+        <div className="h-16 rounded-2xl bg-white/20" />
+        <div className="grid grid-cols-2 gap-2">
+          <div className="h-14 rounded-2xl bg-white/80" />
+          <div className="h-14 rounded-2xl bg-white/35" />
+        </div>
+      </div>
+    ),
+  },
+  {
+    title: "Dark",
+    text: "Koyu arka plan, iki sutun kategori vitrini ve gece hissi veren sunum.",
+    previewClass: "bg-gradient-to-br from-[#0f172a] via-[#111827] to-[#334155]",
+    preview: (
+      <div className="space-y-3 p-4">
+        <div className="mx-auto h-8 w-8 rounded-full bg-white/90" />
+        <div className="grid grid-cols-2 gap-2">
+          <div className="h-14 rounded-2xl border border-white/10 bg-white/10" />
+          <div className="h-14 rounded-2xl border border-white/10 bg-white/5" />
+        </div>
+      </div>
+    ),
+  },
+  {
+    title: "Editorial",
+    text: "Premium hissi veren buyuk tipografi ve zengin bloklar.",
+    previewClass: "bg-gradient-to-br from-[#111827] to-[#374151]",
+    preview: (
+      <div className="space-y-3 p-4">
+        <div className="h-5 w-24 rounded-full bg-white/25" />
+        <div className="h-16 rounded-2xl bg-white/10" />
+        <div className="h-4 w-32 rounded-full bg-white/20" />
+      </div>
+    ),
+  },
+];
+
 function SectionTitle({ eyebrow, title, text }) {
   return (
     <div className="max-w-2xl">
@@ -262,28 +305,16 @@ export default function Landing() {
           <SectionTitle
             eyebrow="Temalar"
             title="Markaniza uygun farkli menu deneyimleri"
-            text="Showcase, Minimal ve Editorial gibi farkli gorunumlerle restoraninizin ruhuna uygun bir menu vitrini kurun."
+            text="Showcase, Dark ve Editorial gibi farkli gorunumlerle restoraninizin ruhuna uygun bir menu vitrini kurun."
           />
 
           <div className="mt-10 grid gap-5 lg:grid-cols-3">
-            {[
-              ["Showcase", "Gorsel agirlikli kategori vitrini ve guclu kapak sunumu."],
-              ["Minimal", "Sade, hizli ve fiyat odakli okunabilir deneyim."],
-              ["Editorial", "Premium hissi veren buyuk tipografi ve zengin bloklar."],
-            ].map(([title, text], index) => (
-              <div key={title} className="overflow-hidden rounded-[2rem] border border-white/70 bg-white shadow-soft">
-                <div
-                  className={`h-44 ${
-                    index === 0
-                      ? "bg-gradient-to-br from-[#173b8f] via-[#2563eb] to-[#78a9ff]"
-                      : index === 1
-                        ? "bg-gradient-to-br from-slate-100 to-white"
-                        : "bg-gradient-to-br from-[#111827] to-[#374151]"
-                  }`}
-                />
+            {themeCards.map((card) => (
+              <div key={card.title} className="overflow-hidden rounded-[2rem] border border-white/70 bg-white shadow-soft">
+                <div className={`h-44 ${card.previewClass}`}>{card.preview}</div>
                 <div className="p-6">
-                  <h3 className="text-xl font-extrabold tracking-tight text-slate-900">{title}</h3>
-                  <p className="mt-3 text-sm leading-7 text-slate-600">{text}</p>
+                  <h3 className="text-xl font-extrabold tracking-tight text-slate-900">{card.title}</h3>
+                  <p className="mt-3 text-sm leading-7 text-slate-600">{card.text}</p>
                 </div>
               </div>
             ))}
