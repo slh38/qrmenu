@@ -191,7 +191,7 @@ export default function Landing() {
       <main>
         <section className="relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(37,99,235,0.16),transparent_32%),radial-gradient(circle_at_right,rgba(120,169,255,0.24),transparent_28%),linear-gradient(180deg,#fafdff_0%,#eef4ff_100%)]" />
-          <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-8 sm:px-6 lg:grid-cols-[1fr_1.02fr] lg:items-center lg:px-8 lg:py-12">
+          <div className="relative mx-auto grid max-w-7xl gap-10 px-4 pb-8 pt-3 sm:px-6 lg:grid-cols-[1fr_1.02fr] lg:items-center lg:px-8 lg:pb-12 lg:pt-4">
             <div className="max-w-2xl">
               <div className="inline-flex rounded-full border border-blue-100 bg-white/80 px-4 py-2 text-sm font-semibold text-[#2563eb]">
                 Modern • Hizli • Kolay
