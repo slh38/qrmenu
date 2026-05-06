@@ -115,6 +115,41 @@ function PageHeader({ tenant, socials, theme, onContactClick }) {
   const isDark = theme !== "minimal";
   const combinedSocials = [...socials, { key: "contact", href: "#contact", label: "Iletisim", icon: null }];
 
+  if (theme === "dark") {
+    return (
+      <header className="relative overflow-hidden bg-[#0d111c] text-white">
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-35"
+          style={{ backgroundImage: `url(${resolveAssetUrl(tenant.coverImageUrl || tenant.logoUrl || "")})` }}
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,11,20,0.45),rgba(7,11,20,0.88))]" />
+        <div className="relative mx-auto max-w-5xl px-4 pb-8 pt-8 sm:px-6">
+          <LogoBadge tenant={tenant} dark />
+          <div className="mt-2 flex flex-wrap justify-center gap-3">
+            {combinedSocials.map((social) =>
+              social.key === "contact" ? (
+                <button key={social.key} type="button" onClick={onContactClick}>
+                  <ContactIcon dark />
+                </button>
+              ) : (
+                <a
+                  key={social.key}
+                  href={social.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={social.label}
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/10 text-white transition hover:bg-white/15"
+                >
+                  <SocialIcon icon={social.icon} />
+                </a>
+              )
+            )}
+          </div>
+        </div>
+      </header>
+    );
+  }
+
   if (theme === "minimal") {
     return (
       <header className="border-b border-slate-200 bg-white">
@@ -188,7 +223,12 @@ function PageHeader({ tenant, socials, theme, onContactClick }) {
 }
 
 function CategoryGrid({ categories, tenant, categoryBasePath, theme }) {
-  const gridClass = theme === "minimal" ? "grid gap-4 sm:grid-cols-2" : "grid gap-4 md:grid-cols-2 xl:grid-cols-3";
+  const gridClass =
+    theme === "minimal"
+      ? "grid gap-4 sm:grid-cols-2"
+      : theme === "dark"
+        ? "grid grid-cols-2 gap-3 sm:gap-4"
+        : "grid gap-4 md:grid-cols-2 xl:grid-cols-3";
 
   return (
     <div className={gridClass}>
@@ -197,7 +237,7 @@ function CategoryGrid({ categories, tenant, categoryBasePath, theme }) {
           key={category._id}
           to={`${categoryBasePath}/${category._id}`}
           className={`group relative overflow-hidden rounded-[2rem] text-left shadow-soft ${
-            theme === "minimal" ? "border border-slate-200 bg-white" : "bg-slate-900"
+            theme === "minimal" ? "border border-slate-200 bg-white" : theme === "dark" ? "border border-white/10 bg-[#111827]" : "bg-slate-900"
           }`}
         >
           {getCategoryImage(category, tenant) ? (
@@ -210,10 +250,18 @@ function CategoryGrid({ categories, tenant, categoryBasePath, theme }) {
           ) : (
             <div className={`h-56 w-full ${theme === "minimal" ? "bg-slate-100" : "bg-gradient-to-br from-slate-800 to-slate-600"}`} />
           )}
-          <div className={`absolute inset-0 ${theme === "minimal" ? "bg-[linear-gradient(180deg,transparent,rgba(15,23,42,0.75))]" : "bg-[linear-gradient(180deg,transparent,rgba(15,23,42,0.88))]"}`} />
-          <div className="absolute inset-x-0 bottom-0 p-5 text-white">
-            <p className="text-xs uppercase tracking-[0.3em] text-white/65">{category.items.length} urun</p>
-            <h2 className="mt-2 font-display text-3xl font-extrabold">{category.name}</h2>
+          <div
+            className={`absolute inset-0 ${
+              theme === "minimal"
+                ? "bg-[linear-gradient(180deg,transparent,rgba(15,23,42,0.75))]"
+                : theme === "dark"
+                  ? "bg-[linear-gradient(180deg,rgba(7,11,20,0.08),rgba(7,11,20,0.82))]"
+                  : "bg-[linear-gradient(180deg,transparent,rgba(15,23,42,0.88))]"
+            }`}
+          />
+          <div className={`absolute inset-x-0 bottom-0 ${theme === "dark" ? "p-4" : "p-5"} text-white`}>
+            <p className="text-[10px] uppercase tracking-[0.3em] text-white/65">{category.items.length} urun</p>
+            <h2 className={`mt-2 font-display font-extrabold ${theme === "dark" ? "text-xl leading-tight sm:text-2xl" : "text-3xl"}`}>{category.name}</h2>
             {category.description ? <p className="mt-2 text-sm text-white/75">{category.description}</p> : null}
           </div>
         </Link>
@@ -222,11 +270,20 @@ function CategoryGrid({ categories, tenant, categoryBasePath, theme }) {
   );
 }
 
-function BackBar({ homePath, categoryBasePath, categories, activeCategoryId }) {
+function BackBar({ homePath, categoryBasePath, categories, activeCategoryId, theme }) {
   return (
-    <div className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/90 backdrop-blur">
+    <div
+      className={`sticky top-0 z-30 backdrop-blur ${
+        theme === "dark" ? "border-b border-white/10 bg-[#0d111c]/90" : "border-b border-slate-200/80 bg-white/90"
+      }`}
+    >
       <div className="mx-auto flex max-w-6xl items-center gap-3 overflow-x-auto px-4 py-4 sm:px-6">
-        <Link to={homePath} className="shrink-0 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700">
+        <Link
+          to={homePath}
+          className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold ${
+            theme === "dark" ? "border border-white/10 bg-white/5 text-white" : "border border-slate-200 bg-white text-slate-700"
+          }`}
+        >
           Kategoriler
         </Link>
         {categories.map((category) => (
@@ -234,7 +291,11 @@ function BackBar({ homePath, categoryBasePath, categories, activeCategoryId }) {
             key={category._id}
             to={`${categoryBasePath}/${category._id}`}
             className={`shrink-0 rounded-full border px-4 py-2 text-sm font-semibold transition ${
-              activeCategoryId === category._id ? "border-transparent text-white" : "border-slate-200 bg-white text-slate-700"
+              activeCategoryId === category._id
+                ? "border-transparent text-white"
+                : theme === "dark"
+                  ? "border-white/10 bg-white/5 text-white/80"
+                  : "border-slate-200 bg-white text-slate-700"
             }`}
             style={activeCategoryId === category._id ? { backgroundColor: "var(--accent-color)" } : undefined}
           >
@@ -246,18 +307,22 @@ function BackBar({ homePath, categoryBasePath, categories, activeCategoryId }) {
   );
 }
 
-function DetailHeader({ homePath, category }) {
+function DetailHeader({ homePath, category, theme }) {
   return (
     <div className="mb-6 flex items-center justify-between gap-4">
       <div>
-        <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Kategori</p>
-        <h2 className="mt-2 font-display text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">{category.name}</h2>
-        {category.description ? <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-500">{category.description}</p> : null}
+        <p className={`text-xs uppercase tracking-[0.3em] ${theme === "dark" ? "text-white/45" : "text-slate-400"}`}>Kategori</p>
+        <h2 className={`mt-2 font-display text-3xl font-extrabold tracking-tight sm:text-4xl ${theme === "dark" ? "text-white" : "text-slate-900"}`}>{category.name}</h2>
+        {category.description ? (
+          <p className={`mt-3 max-w-2xl text-sm leading-6 ${theme === "dark" ? "text-white/65" : "text-slate-500"}`}>{category.description}</p>
+        ) : null}
       </div>
       <button
         type="button"
         onClick={() => window.location.assign(homePath)}
-        className="hidden rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 sm:block"
+        className={`hidden rounded-2xl px-4 py-3 text-sm font-semibold sm:block ${
+          theme === "dark" ? "border border-white/10 bg-white/5 text-white" : "border border-slate-200 bg-white text-slate-700"
+        }`}
       >
         Geri Don
       </button>
@@ -317,6 +382,29 @@ function ItemList({ items, theme }) {
                   </div>
                 </div>
               </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    );
+  }
+
+  if (theme === "dark") {
+    return (
+      <div className="grid gap-4 sm:grid-cols-2">
+        {items.map((item) => (
+          <article key={item._id} className="overflow-hidden rounded-[1.8rem] border border-white/10 bg-[#121a28] shadow-soft">
+            {item.imageUrl ? (
+              <img src={resolveAssetUrl(item.imageUrl)} alt={item.name} loading="lazy" className="h-44 w-full object-cover" />
+            ) : (
+              <div className="h-44 bg-gradient-to-br from-slate-800 to-slate-700" />
+            )}
+            <div className="p-4">
+              <div className="flex items-start justify-between gap-3">
+                <h3 className="font-display text-xl font-extrabold text-white">{item.name}</h3>
+                <div className="shrink-0 rounded-full bg-white/10 px-3 py-1 text-sm font-bold text-white">{formatPrice(item)}</div>
+              </div>
+              {item.description ? <p className="mt-3 text-sm leading-6 text-white/65">{item.description}</p> : null}
             </div>
           </article>
         ))}
@@ -412,31 +500,35 @@ export default function PublicMenu({ forcedSlug = "" }) {
 
   const theme = menu.tenant.theme || "showcase";
   const socials = getVisibleSocials(menu.tenant.socialLinks);
-  const pageBackground = theme === "minimal" ? "bg-[#f8fafc]" : theme === "editorial" ? "bg-[#f4efe8]" : "bg-[#f8f3ec]";
+  const pageBackground =
+    theme === "minimal" ? "bg-[#f8fafc]" : theme === "editorial" ? "bg-[#f4efe8]" : theme === "dark" ? "bg-[#0a0f18]" : "bg-[#f8f3ec]";
 
   const scrollToContact = () => {
     document.getElementById(contactSectionId)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   return (
-    <div className={`min-h-screen ${pageBackground} text-slate-900`} style={{ "--accent-color": menu.tenant.primaryColor || "#2563eb" }}>
+    <div
+      className={`min-h-screen ${pageBackground} ${theme === "dark" ? "text-white" : "text-slate-900"}`}
+      style={{ "--accent-color": menu.tenant.primaryColor || "#2563eb" }}
+    >
       <PageHeader tenant={menu.tenant} socials={socials} theme={theme} onContactClick={scrollToContact} />
 
       {selectedCategory ? (
-        <BackBar homePath={homePath} categoryBasePath={categoryBasePath} categories={categories} activeCategoryId={selectedCategory._id} />
+        <BackBar homePath={homePath} categoryBasePath={categoryBasePath} categories={categories} activeCategoryId={selectedCategory._id} theme={theme} />
       ) : null}
 
-      <main className={`mx-auto px-4 py-8 sm:px-6 ${theme === "minimal" ? "max-w-5xl" : "max-w-6xl"}`}>
+      <main className={`mx-auto px-4 py-8 sm:px-6 ${theme === "minimal" ? "max-w-5xl" : theme === "dark" ? "max-w-5xl" : "max-w-6xl"}`}>
         {selectedCategory ? (
           <section>
-            <DetailHeader homePath={homePath} category={selectedCategory} />
+            <DetailHeader homePath={homePath} category={selectedCategory} theme={theme} />
             <ItemList items={selectedCategory.items} theme={theme} />
           </section>
         ) : (
           <section>
             <div className="mb-6">
-              <h2 className="font-display text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">Kategoriler</h2>
-              <p className="mt-3 text-sm text-slate-500">Urunleri gormek icin bir kategori sec.</p>
+              {theme === "dark" ? null : <h2 className="font-display text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">Kategoriler</h2>}
+              {theme === "dark" ? null : <p className="mt-3 text-sm text-slate-500">Urunleri gormek icin bir kategori sec.</p>}
             </div>
             <CategoryGrid categories={categories} tenant={menu.tenant} categoryBasePath={categoryBasePath} theme={theme} />
           </section>
@@ -444,22 +536,22 @@ export default function PublicMenu({ forcedSlug = "" }) {
       </main>
 
       <section id={contactSectionId} className="mx-auto max-w-6xl px-4 pb-8 sm:px-6">
-        <div className="rounded-[2rem] border border-slate-200 bg-white/80 p-6 shadow-soft backdrop-blur">
-          <h3 className="font-display text-2xl font-extrabold tracking-tight text-slate-900">Iletisim</h3>
+        <div className={`rounded-[2rem] p-6 shadow-soft backdrop-blur ${theme === "dark" ? "border border-white/10 bg-[#121a28]" : "border border-slate-200 bg-white/80"}`}>
+          <h3 className={`font-display text-2xl font-extrabold tracking-tight ${theme === "dark" ? "text-white" : "text-slate-900"}`}>Iletisim</h3>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            <div className="rounded-[1.4rem] bg-slate-50 p-4">
-              <p className="text-xs uppercase tracking-[0.28em] text-slate-400">Telefon</p>
-              <p className="mt-2 text-base font-semibold text-slate-900">{menu.tenant.phone || "Belirtilmedi"}</p>
+            <div className={`rounded-[1.4rem] p-4 ${theme === "dark" ? "bg-white/5" : "bg-slate-50"}`}>
+              <p className={`text-xs uppercase tracking-[0.28em] ${theme === "dark" ? "text-white/40" : "text-slate-400"}`}>Telefon</p>
+              <p className={`mt-2 text-base font-semibold ${theme === "dark" ? "text-white" : "text-slate-900"}`}>{menu.tenant.phone || "Belirtilmedi"}</p>
             </div>
-            <div className="rounded-[1.4rem] bg-slate-50 p-4">
-              <p className="text-xs uppercase tracking-[0.28em] text-slate-400">Adres</p>
-              <p className="mt-2 text-base font-semibold text-slate-900">{menu.tenant.address || "Belirtilmedi"}</p>
+            <div className={`rounded-[1.4rem] p-4 ${theme === "dark" ? "bg-white/5" : "bg-slate-50"}`}>
+              <p className={`text-xs uppercase tracking-[0.28em] ${theme === "dark" ? "text-white/40" : "text-slate-400"}`}>Adres</p>
+              <p className={`mt-2 text-base font-semibold ${theme === "dark" ? "text-white" : "text-slate-900"}`}>{menu.tenant.address || "Belirtilmedi"}</p>
             </div>
           </div>
         </div>
       </section>
 
-      <footer className="px-4 pb-8 pt-3 text-center text-xs uppercase tracking-[0.28em] text-slate-400">Joker QR Menu</footer>
+      <footer className={`px-4 pb-8 pt-3 text-center text-xs uppercase tracking-[0.28em] ${theme === "dark" ? "text-white/35" : "text-slate-400"}`}>Joker QR Menu</footer>
     </div>
   );
 }

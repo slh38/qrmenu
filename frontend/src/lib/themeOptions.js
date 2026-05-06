@@ -14,4 +14,9 @@ export const themeOptions = [
     name: "Editorial",
     description: "Daha premium, buyuk tipografi ve hikaye hissi veren duzen.",
   },
+  {
+    id: "dark",
+    name: "Dark",
+    description: "Koyu arka plan, vitrinde iki sutun kategori kartlari ve daha gece kulubu hissi.",
+  },
 ];

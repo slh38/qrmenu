@@ -88,7 +88,7 @@ const tenantSchema = new mongoose.Schema(
     },
     theme: {
       type: String,
-      enum: ["showcase", "minimal", "editorial"],
+      enum: ["showcase", "minimal", "editorial", "dark"],
       default: "showcase",
     },
     primaryColor: {
