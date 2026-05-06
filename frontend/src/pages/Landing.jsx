@@ -191,7 +191,7 @@ export default function Landing() {
       <main>
         <section className="relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(37,99,235,0.16),transparent_32%),radial-gradient(circle_at_right,rgba(120,169,255,0.24),transparent_28%),linear-gradient(180deg,#fafdff_0%,#eef4ff_100%)]" />
-          <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1fr_1.02fr] lg:px-8 lg:py-20">
+          <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1fr_1.02fr] lg:items-center lg:px-8 lg:py-20">
             <div className="max-w-2xl">
               <div className="inline-flex rounded-full border border-blue-100 bg-white/80 px-4 py-2 text-sm font-semibold text-[#2563eb]">
                 Modern • Hizli • Kolay
@@ -233,7 +233,7 @@ export default function Landing() {
               </div>
             </div>
 
-            <div className="relative flex items-center justify-center">
+            <div className="relative flex items-center justify-center lg:pt-10">
               <div className="relative w-full max-w-[620px]">
                 <div className="absolute right-0 top-16 hidden w-52 rounded-[2rem] bg-gradient-to-br from-[#173b8f] to-[#2563eb] p-5 text-white shadow-[0_26px_60px_rgba(23,59,143,0.34)] lg:block">
                   <h3 className="text-[1.72rem] font-extrabold tracking-tight leading-none">JokerQRMenu</h3>
