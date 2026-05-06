@@ -235,7 +235,7 @@ export default function Landing() {
 
             <div className="relative flex items-center justify-center lg:pt-10">
               <div className="relative w-full max-w-[620px]">
-                <div className="absolute right-0 top-16 hidden w-52 rounded-[2rem] bg-gradient-to-br from-[#173b8f] to-[#2563eb] p-5 text-white shadow-[0_26px_60px_rgba(23,59,143,0.34)] lg:block">
+                <div className="absolute right-0 top-10 z-20 hidden w-52 rounded-[2rem] bg-gradient-to-br from-[#173b8f] to-[#2563eb] p-5 text-white shadow-[0_26px_60px_rgba(23,59,143,0.34)] lg:block">
                   <h3 className="text-[1.72rem] font-extrabold tracking-tight leading-none">JokerQRMenu</h3>
                   <div className="mt-6 rounded-[1.6rem] bg-white p-4">
                     <div className="overflow-hidden rounded-[1.1rem] border border-slate-200 bg-[#f8fbff] p-3">
@@ -245,7 +245,7 @@ export default function Landing() {
                   <p className="mt-6 text-center text-lg font-extrabold leading-snug tracking-tight">Demo Menu Icin Okutun</p>
                 </div>
 
-                <div className="mx-auto w-full max-w-[360px] lg:mr-20">
+                <div className="relative z-10 mx-auto w-full max-w-[360px] pt-12 lg:mr-20 lg:pt-20">
                   <img
                     src="/menu-phone.png"
                     alt="JokerQRMenu telefon menu gorunumu"
