@@ -4,43 +4,43 @@ import { Link } from "react-router-dom";
 const featureCards = [
   {
     icon: "qr",
-    title: "QR Kod ile Kolay Erisim",
-    text: "Masadaki tek bir kod ile menunuzu aninda acin, baski maliyetini azaltin ve servis akisini hizlandirin.",
+    title: "QR Kod ile Kolay Erişim",
+    text: "Masadaki tek bir kod ile menünüzü anında açın, baskı maliyetini azaltın ve servis akışını hızlandırın.",
   },
   {
     icon: "refresh",
-    title: "Anlik Guncelleme",
-    text: "Fiyat, kategori ve urun degisikliklerini panelden dakikalar icinde yayinlayin. Yeni baski beklemeyin.",
+    title: "Anlık Güncelleme",
+    text: "Fiyat, kategori ve ürün değişikliklerini panelden dakikalar içinde yayınlayın. Yeni baskı beklemeyin.",
   },
   {
     icon: "palette",
-    title: "Tema Secenekleri",
-    text: "Restoraniniza uygun modern menu sunumunu secin, sosyal medya ve marka alanlariyla daha guclu gorunun.",
+    title: "Tema Seçenekleri",
+    text: "Restoranınıza uygun modern menü sunumunu seçin, sosyal medya ve marka alanlarıyla daha güçlü görünün.",
   },
 ];
 
 const stats = [
   { label: "Mobil Uyumlu", value: "%100" },
-  { label: "Tema Secenegi", value: "3+" },
-  { label: "Kurulum Suresi", value: "10 dk" },
+  { label: "Tema Seçeneği", value: "3+" },
+  { label: "Kurulum Süresi", value: "10 dk" },
 ];
 
 const steps = [
-  "Isletmenizi kaydedin ve temel bilgileri ekleyin.",
-  "Kategori, urun, gorsel ve sosyal medya alanlarini yonetin.",
-  "QR kodunuzu olusturun ve masalarinizda kullanin.",
+  "İşletmenizi kaydedin ve temel bilgileri ekleyin.",
+  "Kategori, ürün, görsel ve sosyal medya alanlarını yönetin.",
+  "QR kodunuzu oluşturun ve masalarınızda kullanın.",
 ];
 
 const pricing = [
-  "Sinirsiz kategori ve urun yonetimi",
-  "QR kod olusturma ve dijital menu yayini",
-  "Tema secimi, logo, kapak ve sosyal medya destegi",
+  "Sınırsız kategori ve ürün yönetimi",
+  "QR kod oluşturma ve dijital menü yayını",
+  "Tema seçimi, logo, kapak ve sosyal medya desteği",
 ];
 
 const themeCards = [
   {
     title: "Showcase",
-    text: "Gorsel agirlikli kategori vitrini ve guclu kapak sunumu.",
+    text: "Görsel ağırlıklı kategori vitrini ve güçlü kapak sunumu.",
     previewClass: "bg-gradient-to-br from-[#173b8f] via-[#2563eb] to-[#78a9ff]",
     preview: (
       <div className="space-y-3 p-4">
@@ -54,7 +54,7 @@ const themeCards = [
   },
   {
     title: "Dark",
-    text: "Koyu arka plan, iki sutun kategori vitrini ve gece hissi veren sunum.",
+    text: "Koyu arka plan, iki sütun kategori vitrini ve gece hissi veren sunum.",
     previewClass: "bg-gradient-to-br from-[#0f172a] via-[#111827] to-[#334155]",
     preview: (
       <div className="space-y-3 p-4">
@@ -68,7 +68,7 @@ const themeCards = [
   },
   {
     title: "Editorial",
-    text: "Premium hissi veren buyuk tipografi ve zengin bloklar.",
+    text: "Premium hissi veren büyük tipografi ve zengin bloklar.",
     previewClass: "bg-gradient-to-br from-[#111827] to-[#374151]",
     preview: (
       <div className="space-y-3 p-4">
@@ -126,7 +126,7 @@ function FeatureIcon({ type }) {
 
 export default function Landing() {
   useEffect(() => {
-    document.title = "JokerQRMenu | Restoranlar Icin Dijital QR Menu";
+    document.title = "JokerQRMenu | Restoranlar İçin Dijital QR Menü";
 
     const ensureMeta = (name, content) => {
       let tag = document.querySelector(`meta[name="${name}"]`);
@@ -140,9 +140,9 @@ export default function Landing() {
 
     ensureMeta(
       "description",
-      "JokerQRMenu ile restoraniniz icin mobil uyumlu, modern ve hizli yonetilebilen dijital QR menu olusturun."
+      "JokerQRMenu ile restoranınız için mobil uyumlu, modern ve hızlı yönetilebilen dijital QR menü oluşturun."
     );
-    ensureMeta("keywords", "qr menu, dijital menu, restoran qr menu, cafe qr menu, jokerqrmenu");
+    ensureMeta("keywords", "qr menü, dijital menü, restoran qr menü, cafe qr menü, jokerqrmenu");
   }, []);
 
   return (
@@ -155,10 +155,10 @@ export default function Landing() {
 
           <nav className="hidden items-center gap-8 lg:flex">
             <a href="#ozellikler" className="text-sm font-semibold text-slate-700 transition hover:text-[#2563eb]">
-              Ozellikler
+              Özellikler
             </a>
             <a href="#nasil-calisir" className="text-sm font-semibold text-slate-700 transition hover:text-[#2563eb]">
-              Nasil Calisir?
+              Nasıl Çalışır?
             </a>
             <a href="#temalar" className="text-sm font-semibold text-slate-700 transition hover:text-[#2563eb]">
               Temalar
@@ -167,7 +167,7 @@ export default function Landing() {
               Fiyatlar
             </a>
             <a href="#iletisim" className="text-sm font-semibold text-slate-700 transition hover:text-[#2563eb]">
-              Iletisim
+              İletişim
             </a>
           </nav>
 
@@ -176,13 +176,13 @@ export default function Landing() {
               to="/login"
               className="hidden rounded-2xl border border-[#c9d8ff] px-5 py-3 text-sm font-semibold text-[#173b8f] transition hover:bg-blue-50 sm:inline-flex"
             >
-              Giris Yap
+              Giriş Yap
             </Link>
             <Link
               to="/register"
               className="inline-flex rounded-2xl bg-[#2563eb] px-5 py-3 text-sm font-semibold text-white shadow-[0_16px_40px_rgba(37,99,235,0.28)] transition hover:bg-[#1d4ed8]"
             >
-              Ucretsiz Basla
+              Ücretsiz Başla
             </Link>
           </div>
         </div>
@@ -194,18 +194,18 @@ export default function Landing() {
           <div className="relative mx-auto grid max-w-7xl gap-10 px-4 pb-8 pt-3 sm:px-6 lg:grid-cols-[1fr_1.02fr] lg:items-center lg:px-8 lg:pb-12 lg:pt-4">
             <div className="max-w-2xl">
               <div className="inline-flex rounded-full border border-blue-100 bg-white/80 px-4 py-2 text-sm font-semibold text-[#2563eb]">
-                Modern • Hizli • Kolay
+                Modern • Hızlı • Kolay
               </div>
               <h1 className="mt-7 font-display text-5xl font-extrabold leading-[1.04] tracking-tight text-slate-950 sm:text-6xl">
-                QR Menu ile
+                QR Menü ile
                 <br />
-                Menunuz Hep
+                Menünüz Hep
                 <br />
-                <span className="text-[#2563eb]">Dijital, Hep Guncel</span>
+                <span className="text-[#2563eb]">Dijital, Hep Güncel</span>
               </h1>
               <p className="mt-6 max-w-xl text-lg leading-8 text-slate-600">
-                JokerQRMenu ile restoraniniz icin dijital menu olusturun, fiyat ve urun degisikliklerini panelden yonetin
-                ve musterilerinize profesyonel bir QR deneyimi sunun.
+                JokerQRMenu ile restoranınız için dijital menü oluşturun, fiyat ve ürün değişikliklerini panelden yönetin
+                ve müşterilerinize profesyonel bir QR deneyimi sunun.
               </p>
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -213,13 +213,13 @@ export default function Landing() {
                   to="/register"
                   className="inline-flex items-center justify-center rounded-[1.4rem] bg-[#2563eb] px-7 py-4 text-base font-semibold text-white shadow-[0_18px_45px_rgba(37,99,235,0.28)] transition hover:bg-[#1d4ed8]"
                 >
-                  Ucretsiz Basla
+                  Ücretsiz Başla
                 </Link>
                 <a
                   href="#temalar"
                   className="inline-flex items-center justify-center rounded-[1.4rem] border border-[#c9d8ff] bg-white px-7 py-4 text-base font-semibold text-[#173b8f] transition hover:bg-blue-50"
                 >
-                  Temalari Incele
+                  Temaları İncele
                 </a>
               </div>
 
@@ -239,16 +239,16 @@ export default function Landing() {
                   <h3 className="text-[1.72rem] font-extrabold tracking-tight leading-none">JokerQRMenu</h3>
                   <div className="mt-6 rounded-[1.6rem] bg-white p-4">
                     <div className="overflow-hidden rounded-[1.1rem] border border-slate-200 bg-[#f8fbff] p-3">
-                      <img src="/joker-qr.png" alt="JokerQRMenu demo qr" className="aspect-square w-full rounded-[0.95rem] object-cover" />
+                      <img src="/joker-qr.png" alt="JokerQRMenu demo QR" className="aspect-square w-full rounded-[0.95rem] object-cover" />
                     </div>
                   </div>
-                  <p className="mt-6 text-center text-lg font-extrabold leading-snug tracking-tight">Demo Menu Icin Okutun</p>
+                  <p className="mt-6 text-center text-lg font-extrabold leading-snug tracking-tight">Demo Menü İçin Okutun</p>
                 </div>
 
                 <div className="relative z-10 mx-auto w-full max-w-[360px] pt-12 lg:mr-20 lg:pt-20">
                   <img
                     src="/menu-phone.png"
-                    alt="JokerQRMenu telefon menu gorunumu"
+                    alt="JokerQRMenu telefon menü görünümü"
                     className="h-auto max-h-[720px] w-full object-contain object-top drop-shadow-[0_30px_65px_rgba(15,23,42,0.22)]"
                   />
                 </div>
@@ -259,9 +259,9 @@ export default function Landing() {
 
         <section id="ozellikler" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
           <SectionTitle
-            eyebrow="Ozellikler"
-            title="Restoraniniza uygun hizli ve profesyonel QR menu altyapisi"
-            text="JokerQRMenu; kategori yonetimi, tema secenekleri, sosyal medya linkleri ve mobil odakli dijital menu deneyimiyle isletmenizi dijitale tasir."
+            eyebrow="Özellikler"
+            title="Restoranınıza uygun hızlı ve profesyonel QR menü altyapısı"
+            text="JokerQRMenu; kategori yönetimi, tema seçenekleri, sosyal medya linkleri ve mobil odaklı dijital menü deneyimiyle işletmenizi dijitale taşır."
           />
 
           <div className="mt-10 grid gap-5 lg:grid-cols-3">
@@ -280,9 +280,9 @@ export default function Landing() {
         <section id="nasil-calisir" className="bg-white/70">
           <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
             <SectionTitle
-              eyebrow="Nasil Calisir?"
-              title="Dakikalar icinde menu olusturup QR ile servis edin"
-              text="Sistemi teknik bilgi gerektirmeden kurabilir, menunuzu panelden yonetebilir ve musterilerinize tek bir QR ile profesyonel deneyim sunabilirsiniz."
+              eyebrow="Nasıl Çalışır?"
+              title="Dakikalar içinde menü oluşturup QR ile servis edin"
+              text="Sistemi teknik bilgi gerektirmeden kurabilir, menünüzü panelden yönetebilir ve müşterilerinize tek bir QR ile profesyonel deneyim sunabilirsiniz."
             />
 
             <div className="mt-10 grid gap-5 lg:grid-cols-3">
@@ -301,8 +301,8 @@ export default function Landing() {
         <section id="temalar" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
           <SectionTitle
             eyebrow="Temalar"
-            title="Markaniza uygun farkli menu deneyimleri"
-            text="Showcase, Dark ve Editorial gibi farkli gorunumlerle restoraninizin ruhuna uygun bir menu vitrini kurun."
+            title="Markanıza uygun farklı menü deneyimleri"
+            text="Showcase, Dark ve Editorial gibi farklı görünümlerle restoranınızın ruhuna uygun bir menü vitrini kurun."
           />
 
           <div className="mt-10 grid gap-5 lg:grid-cols-3">
@@ -323,18 +323,18 @@ export default function Landing() {
             <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.32em] text-blue-100">Fiyatlar</p>
-                <h2 className="mt-4 font-display text-4xl font-extrabold tracking-tight sm:text-5xl">Hemen kullanmaya baslayin</h2>
+                <h2 className="mt-4 font-display text-4xl font-extrabold tracking-tight sm:text-5xl">Hemen kullanmaya başlayın</h2>
                 <p className="mt-5 max-w-xl text-base leading-8 text-white/80">
-                  Restoraniniza profesyonel bir dijital menu deneyimi kazandirin. Kurulumu hizli, yonetimi kolay ve
-                  musterileriniz icin her zaman guncel bir menu sunumu elde edin.
+                  Restoranınıza profesyonel bir dijital menü deneyimi kazandırın. Kurulumu hızlı, yönetimi kolay ve
+                  müşterileriniz için her zaman güncel bir menü sunumu elde edin.
                 </p>
               </div>
 
               <div className="rounded-[2rem] bg-white p-6 text-slate-900 shadow-soft">
-                <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[#2563eb]">Baslangic</p>
+                <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[#2563eb]">Başlangıç</p>
                 <div className="mt-4 flex items-end gap-2">
                   <span className="font-display text-5xl font-extrabold tracking-tight">₺2500</span>
-                  <span className="pb-2 text-sm text-slate-500">ile basla</span>
+                  <span className="pb-2 text-sm text-slate-500">ile başla</span>
                 </div>
                 <ul className="mt-6 space-y-3 text-sm leading-7 text-slate-600">
                   {pricing.map((item) => (
@@ -348,7 +348,7 @@ export default function Landing() {
                   to="/register"
                   className="mt-8 inline-flex w-full items-center justify-center rounded-[1.35rem] bg-[#2563eb] px-6 py-4 text-base font-semibold text-white transition hover:bg-[#1d4ed8]"
                 >
-                  Ucretsiz Hesap Olustur
+                  Ücretsiz Hesap Oluştur
                 </Link>
               </div>
             </div>
@@ -359,13 +359,13 @@ export default function Landing() {
           <div className="rounded-[2.2rem] border border-white/70 bg-white/85 p-8 shadow-soft sm:p-10">
             <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
               <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.32em] text-[#2563eb]">Iletisim</p>
+                <p className="text-sm font-semibold uppercase tracking-[0.32em] text-[#2563eb]">İletişim</p>
                 <h2 className="mt-4 font-display text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-                  Sorulariniz icin bizimle hemen iletisime gecin
+                  Sorularınız için bizimle hemen iletişime geçin
                 </h2>
                 <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600">
-                  JokerQRMenu ile restoraniniz icin en uygun dijital menu yapisini belirleyebilir, kurulum sureci ve
-                  kullanim detaylari hakkinda hizli destek alabilirsiniz.
+                  JokerQRMenu ile restoranınız için en uygun dijital menü yapısını belirleyebilir, kurulum süreci ve
+                  kullanım detayları hakkında hızlı destek alabilirsiniz.
                 </p>
               </div>
               <div className="flex flex-col gap-3 sm:flex-row">
@@ -379,7 +379,7 @@ export default function Landing() {
                   to="/register"
                   className="inline-flex items-center justify-center rounded-[1.35rem] bg-[#2563eb] px-6 py-4 text-base font-semibold text-white transition hover:bg-[#1d4ed8]"
                 >
-                  Ucretsiz Basla
+                  Ücretsiz Başla
                 </Link>
               </div>
             </div>
