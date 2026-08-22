@@ -341,6 +341,29 @@ Kontrol listesi:
 - Admin paneli açılıyor mu?
 - Şifre sıfırlama e-postası geliyor mu?
 - Logo ve kapak görselleri HTTPS ile yükleniyor mu?
+- Adisyon Ürünleri sayfası açılıyor mu?
+- Entegrasyon anahtarı üretilebiliyor mu?
+- GeraPOS ajanı SQL ve API bağlantı testlerini geçiyor mu?
+- Fiyat, pasiflik ve yeniden aktif olma davranışı doğru mu?
+
+### GeraPOS entegrasyonu canlı kontrolü
+
+Entegrasyon backend ile birlikte yayınlanır; VPS üzerinde ayrı bir servis kurulmaz. Windows ajanı GeraPOS'un
+çalıştığı müşteri bilgisayarında çalışır.
+
+1. İşletme panelinden entegrasyon anahtarı üretin.
+2. Ajanın SQL bağlantı testini çalıştırın.
+3. Ajanın API bağlantı testini çalıştırın.
+4. Manuel tam senkronizasyon yapın.
+5. Panelde havuzdaki ürün sayısını kontrol edin.
+6. Gerçek bir ürünü QR menüye aktarın.
+7. GeraPOS fiyatını değiştirip yeniden senkronize edin.
+8. QR adı, kategorisi ve görselinin korunduğunu doğrulayın.
+
+Ajan kurulumu ve davranış kuralları:
+
+- [GERAPOS_INTEGRATION.md](GERAPOS_INTEGRATION.md)
+- [sync-agent/README.md](sync-agent/README.md)
 
 ## 12. Güncelleme ve yeniden yayınlama
 
@@ -491,6 +514,30 @@ pm2 list
 curl http://127.0.0.1:5000/api/health
 ```
 
+#### Entegrasyon API'si `401` dönüyor
+
+- Ajan anahtarının başında/sonunda boşluk olmadığını kontrol edin.
+- Panelden yeni anahtar üretildiyse eski anahtar artık çalışmaz.
+- Ajan ekranında yeni anahtarı girip **Ayarları Kaydet** düğmesine basın.
+- Tenant admin tarafından pasife alınmışsa entegrasyon anahtarı kabul edilmez.
+
+#### Ajan SQL'den sıfır ürün okuyor
+
+- Veritabanı adı ve bağlantı dosyası yolunu kontrol edin.
+- SQL sorgusunu SSMS üzerinde aynı kullanıcıyla çalıştırın.
+- Ajan güvenlik amacıyla sıfır ürünlü tam listeyi API'ye göndermez; mevcut menü pasife alınmaz.
+
+#### Aynı stok için farklı fiyat hatası
+
+`FIYAT` tablosunda aynı `StokKart_ID` için farklı fiyatlar vardır. Kullanılacak fiyat listesini belirleyin ve ajan
+sorgusuna fiyat türü/liste filtresi ekleyin. Hata çözülmeden rastgele bir fiyat gönderilmez.
+
+#### Havuz sayısı SQL tekil ürün sayısından yüksek
+
+Tam listede artık bulunmayan eski veya test ürünleri geçmişi korumak için silinmez, pasife alınır. Bu nedenle
+havuz toplamı son SQL tekil ürün sayısından yüksek olabilir. Dijital menü yalnızca QR'a aktarılmış ve kaynakta
+aktif ürünleri gösterir.
+
 ## 14. Yedekleme
 
 Yedeklenmesi gereken iki ayrı veri grubu vardır:
@@ -514,4 +561,3 @@ MongoDB için Atlas backup özelliğini veya `mongodump` kullanın. Yedekleri ya
 - Yeni backend ortam değişkenleri PM2 restart sonrasında etkili olur.
 - Tenant slug değişirse eski QR adresi değişir ve QR yeniden oluşturulmalıdır.
 - Admin tarafından pasife alınan tenant giriş yapamaz ve dijital menüsü açılmaz.
-

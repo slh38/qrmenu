@@ -50,6 +50,9 @@ Tarayıcı
                                              ├── MongoDB Atlas
                                              ├── backend/uploads
                                              └── SMTP sunucusu
+
+GeraPOS bilgisayarı
+└── .NET 8 Windows ajanı -> MS SQL -> api.jokerqrmenu.com -> MongoDB ürün havuzu
 ```
 
 Frontend tek bir Vite/React build'idir. Açılan hostname'e göre tanıtım sitesi, admin paneli veya işletmenin dijital menüsü gösterilir.
@@ -73,6 +76,13 @@ Frontend tek bir Vite/React build'idir. Açılan hostname'e göre tanıtım site
 - Nodemailer
 - QRCode
 
+### GeraPOS senkronizasyon ajanı
+
+- .NET 8 WinForms
+- Microsoft.Data.SqlClient
+- Windows DPAPI
+- Self-contained `win-x64` tek EXE yayın
+
 ### Canlı altyapı
 
 - Ubuntu VPS
@@ -88,7 +98,7 @@ Frontend tek bir Vite/React build'idir. Açılan hostname'e göre tanıtım site
 .
 ├── backend/
 │   ├── middleware/       # Tenant/admin doğrulama ve görsel yükleme
-│   ├── models/           # Tenant, Category ve MenuItem modelleri
+│   ├── models/           # Tenant, Category, MenuItem ve IntegrationProduct modelleri
 │   ├── routes/           # REST API route'ları
 │   ├── uploads/          # Yüklenen görseller (canlıda kalıcı veri)
 │   ├── mailer.js         # Şifre sıfırlama e-postası
@@ -101,6 +111,7 @@ Frontend tek bir Vite/React build'idir. Açılan hostname'e göre tanıtım site
 │   ├── src/pages/        # Uygulama sayfaları
 │   └── src/App.jsx       # Hostname ve route yönetimi
 ├── sync-agent/            # Self-contained .NET 8 GeraPOS Windows ajanı
+├── GERAPOS_INTEGRATION.md # Entegrasyon mimarisi ve veri kuralları
 ├── DEPLOYMENT.md         # VPS yayın ve bakım rehberi
 ├── render.yaml           # Eski/alternatif Render yapılandırması
 └── README.md
@@ -113,6 +124,7 @@ Frontend tek bir Vite/React build'idir. Açılan hostname'e göre tanıtım site
 - Node.js 22 önerilir
 - npm
 - MongoDB veya MongoDB Atlas bağlantısı
+- Windows ajanını build etmek için .NET 8 veya daha yeni SDK
 
 ### 1. Repoyu alın
 
@@ -260,6 +272,8 @@ bir QR kategorisine aktarır.
 - Ajan `net8.0-windows`, `win-x64`, self-contained tek EXE olarak yayınlanır.
 
 Ajan build ve kullanım ayrıntıları için `sync-agent/README.md` dosyasına bakın.
+Entegrasyonun veri modeli, güvenlik ve senkronizasyon kuralları için
+[GERAPOS_INTEGRATION.md](GERAPOS_INTEGRATION.md) dosyasına bakın.
 
 ## Tenant ve subdomain davranışı
 
@@ -287,6 +301,8 @@ Ajan build ve kullanım ayrıntıları için `sync-agent/README.md` dosyasına b
 - Admin hesabında güçlü ve benzersiz parola kullanın.
 - Yüklenen dosyalar ve MongoDB için düzenli yedek alın.
 - Production'da HTTPS zorunlu tutulmalıdır.
+- Entegrasyon anahtarını sohbet, e-posta veya kaynak kod içinde paylaşmayın; açığa çıkarsa panelden yenileyin.
+- `VeriBaglantisi.txt`, SQL parolası ve ajan ayar dosyası Git'e eklenmemelidir.
 
 ## Yayın ve bakım
 
