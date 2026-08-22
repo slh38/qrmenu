@@ -324,6 +324,9 @@ export default function MenuItems() {
                   {item.sourceType === "gerapos" ? (
                     <span className="mt-2 inline-flex rounded-full bg-blue-100 px-2.5 py-1 text-[11px] font-bold text-blue-800">GeraPOS</span>
                   ) : null}
+                  {item.sourceType === "gerapos" && item.sourceActive === false ? (
+                    <span className="ml-2 mt-2 inline-flex rounded-full bg-red-100 px-2.5 py-1 text-[11px] font-bold text-red-700">Adisyonda pasif</span>
+                  ) : null}
                   <p className="mt-1 text-xs uppercase tracking-[0.25em] text-slate-400">
                     {item.categoryId?.name || "Kategori"}
                   </p>

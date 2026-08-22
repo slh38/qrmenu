@@ -277,12 +277,14 @@ export default function IntegrationProducts() {
                 <p className="text-sm text-slate-600">{product.sourceCategory || "Kategori yok"}</p>
                 <p className="font-semibold text-slate-900">{product.sourcePrice.toLocaleString("tr-TR", { minimumFractionDigits: 2 })} TL</p>
                 <div>
-                  {imported ? (
+                  {passive ? (
+                    <span className="inline-flex rounded-full bg-red-100 px-3 py-1 text-xs font-bold text-red-700">
+                      Adisyonda pasif{imported ? ` • QR'da: ${product.menuItemId.categoryId?.name || "Kategori"}` : ""}
+                    </span>
+                  ) : imported ? (
                     <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-800">
                       QR'da: {product.menuItemId.categoryId?.name || "Kategori"}
                     </span>
-                  ) : passive ? (
-                    <span className="inline-flex rounded-full bg-red-100 px-3 py-1 text-xs font-bold text-red-700">Adisyonda pasif</span>
                   ) : (
                     <span className="inline-flex rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-800">Aktarılabilir</span>
                   )}
