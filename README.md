@@ -36,6 +36,8 @@ https://ornek-restoran.jokerqrmenu.com
 - Şifre sıfırlama e-postası
 - Admin panelinden işletme, kategori ve ürün sayılarını izleme
 - Admin panelinden işletmeleri aktif veya pasif yapma
+- GeraPOS/MS SQL ürün havuzu ve seçili ürünleri QR menüye aktarma
+- Fiyat ve aktiflik durumunu Windows ajanıyla otomatik senkronize etme
 
 ## Mimari
 
@@ -98,6 +100,7 @@ Frontend tek bir Vite/React build'idir. Açılan hostname'e göre tanıtım site
 │   ├── src/lib/          # API, admin token ve tema yardımcıları
 │   ├── src/pages/        # Uygulama sayfaları
 │   └── src/App.jsx       # Hostname ve route yönetimi
+├── sync-agent/            # Self-contained .NET 8 GeraPOS Windows ajanı
 ├── DEPLOYMENT.md         # VPS yayın ve bakım rehberi
 ├── render.yaml           # Eski/alternatif Render yapılandırması
 └── README.md
@@ -240,7 +243,23 @@ npm run preview  # Build'i yerelde önizleme
 | `/api/categories` | Kategori yönetimi |
 | `/api/menu-items` | Ürün yönetimi |
 | `/api/qr` | QR kod üretimi |
+| `/api/integrations/gerapos` | GeraPOS ürün senkronizasyonu ve aktarım havuzu |
 | `/uploads` | Yüklenen görseller |
+
+## GeraPOS entegrasyonu
+
+GeraPOS entegrasyonu mevcut manuel ürün yapısını değiştirmez. Windows ajanı SQL'deki bütün ürünleri ayrı bir
+adisyon ürün havuzuna gönderir. İşletme, paneldeki **Adisyon Ürünleri** sayfasından istediği ürünleri seçerek tek
+bir QR kategorisine aktarır.
+
+- Fiyat ve kaynak aktifliği GeraPOS tarafından yönetilir.
+- QR ürün adı, kategorisi, açıklaması, görseli ve sırası panelden yönetilir.
+- Kaynak kategori yalnızca bilgi amaçlıdır; QR kategorisini kullanıcı seçer.
+- Pasif kaynak ürün dijital menüde gizlenir, görseli ve QR ayarları korunur.
+- Ajan 5/15/30/60 dakika veya günlük seçilen saatte çalışabilir.
+- Ajan `net8.0-windows`, `win-x64`, self-contained tek EXE olarak yayınlanır.
+
+Ajan build ve kullanım ayrıntıları için `sync-agent/README.md` dosyasına bakın.
 
 ## Tenant ve subdomain davranışı
 
@@ -278,4 +297,3 @@ VPS kurulumu, Nginx, PM2, wildcard DNS, SSL, güncelleme ve hata giderme adımla
 ```text
 https://github.com/slh38/qrmenu
 ```
-
