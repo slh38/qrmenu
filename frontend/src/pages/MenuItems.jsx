@@ -156,37 +156,6 @@ export default function MenuItems() {
   return (
     <div className="space-y-6">
       <section ref={formSectionRef} className="glass-panel scroll-mt-24 p-6 shadow-soft">
-        <div className="mb-5 flex items-center gap-3 rounded-2xl border border-blue-100 bg-white px-4 py-3 shadow-sm focus-within:border-blue-300 focus-within:ring-4 focus-within:ring-blue-50">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            className="h-5 w-5 shrink-0 text-blue-600"
-            aria-hidden="true"
-          >
-            <circle cx="11" cy="11" r="7" />
-            <path d="m20 20-4-4" />
-          </svg>
-          <input
-            type="search"
-            value={searchTerm}
-            onChange={(event) => setSearchTerm(event.target.value)}
-            placeholder="Ürün adı, açıklama veya kategori ara..."
-            className="min-w-0 flex-1 bg-transparent text-base text-slate-800 outline-none placeholder:text-slate-400"
-            aria-label="Ürün ara"
-          />
-          {searchTerm ? (
-            <button
-              type="button"
-              onClick={() => setSearchTerm("")}
-              className="rounded-xl px-3 py-1.5 text-sm font-semibold text-blue-700 transition hover:bg-blue-50"
-            >
-              Temizle
-            </button>
-          ) : null}
-        </div>
-
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="font-display text-3xl text-ink">Menu Urunleri</h1>
@@ -280,22 +249,57 @@ export default function MenuItems() {
         </form>
       </section>
 
-      <section className="glass-panel flex flex-col gap-3 px-5 py-4 shadow-soft sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="font-semibold text-slate-800">
-            {normalizedSearchTerm ? `“${deferredSearchTerm.trim()}” için ${filteredItems.length} ürün bulundu` : `${items.length} ürün listeleniyor`}
-          </p>
-          <p className="mt-1 text-sm text-slate-500">Sonuçlardan ürünü bulup Düzenle düğmesine basabilirsiniz.</p>
-        </div>
-        {normalizedSearchTerm ? (
-          <button
-            type="button"
-            onClick={() => setSearchTerm("")}
-            className="self-start rounded-2xl border border-blue-200 bg-white px-4 py-2 text-sm font-semibold text-blue-700 transition hover:bg-blue-50 sm:self-auto"
+      <section className="glass-panel space-y-4 px-5 py-5 shadow-soft">
+        <div className="flex items-center gap-3 rounded-2xl border border-blue-100 bg-white px-4 py-3 shadow-sm focus-within:border-blue-300 focus-within:ring-4 focus-within:ring-blue-50">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            className="h-5 w-5 shrink-0 text-blue-600"
+            aria-hidden="true"
           >
-            Tüm ürünleri göster
-          </button>
-        ) : null}
+            <circle cx="11" cy="11" r="7" />
+            <path d="m20 20-4-4" />
+          </svg>
+          <input
+            type="search"
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+            placeholder="Ürün adı, açıklama veya kategori ara..."
+            className="min-w-0 flex-1 bg-transparent text-base text-slate-800 outline-none placeholder:text-slate-400"
+            aria-label="Ürün ara"
+          />
+          {searchTerm ? (
+            <button
+              type="button"
+              onClick={() => setSearchTerm("")}
+              className="rounded-xl px-3 py-1.5 text-sm font-semibold text-blue-700 transition hover:bg-blue-50"
+            >
+              Temizle
+            </button>
+          ) : null}
+        </div>
+
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="font-semibold text-slate-800">
+              {normalizedSearchTerm
+                ? `“${deferredSearchTerm.trim()}” için ${filteredItems.length} ürün bulundu`
+                : `${items.length} ürün listeleniyor`}
+            </p>
+            <p className="mt-1 text-sm text-slate-500">Sonuçlardan ürünü bulup Düzenle düğmesine basabilirsiniz.</p>
+          </div>
+          {normalizedSearchTerm ? (
+            <button
+              type="button"
+              onClick={() => setSearchTerm("")}
+              className="self-start rounded-2xl border border-blue-200 bg-white px-4 py-2 text-sm font-semibold text-blue-700 transition hover:bg-blue-50 sm:self-auto"
+            >
+              Tüm ürünleri göster
+            </button>
+          ) : null}
+        </div>
       </section>
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
