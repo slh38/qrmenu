@@ -1,6 +1,7 @@
 const express = require("express");
 const Category = require("../models/Category");
 const MenuItem = require("../models/MenuItem");
+const IntegrationProduct = require("../models/IntegrationProduct");
 const upload = require("../middleware/upload");
 const { buildFileUrl, createResponse } = require("../utils");
 
@@ -68,11 +69,15 @@ router.put("/:id", upload.single("image"), async (req, res) => {
       }
     }
 
-    const payload = {
-      ...req.body,
-    };
+    const allowedFields = ["categoryId", "name", "description", "currency", "isAvailable", "order"];
+    const payload = allowedFields.reduce((result, field) => {
+      if (req.body[field] !== undefined) {
+        result[field] = req.body[field];
+      }
+      return result;
+    }, {});
 
-    if (req.body.price !== undefined) {
+    if (req.body.price !== undefined && existingItem.sourceType !== "gerapos") {
       payload.price = Number(req.body.price);
     }
 
@@ -105,6 +110,13 @@ router.delete("/:id", async (req, res) => {
     const item = await MenuItem.findOneAndDelete({ _id: req.params.id, tenantId: req.tenantId });
     if (!item) {
       return res.status(404).json(createResponse(false, "Ürün bulunamadı.", {}));
+    }
+
+    if (item.integrationProductId) {
+      await IntegrationProduct.findOneAndUpdate(
+        { _id: item.integrationProductId, tenantId: req.tenantId },
+        { $set: { menuItemId: null } }
+      );
     }
 
     return res.json(createResponse(true, "Ürün silindi.", {}));

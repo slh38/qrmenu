@@ -46,8 +46,27 @@ const menuItemSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    sourceType: {
+      type: String,
+      enum: ["manual", "gerapos"],
+      default: "manual",
+    },
+    integrationProductId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "IntegrationProduct",
+      default: null,
+    },
+    sourceActive: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true }
+);
+
+menuItemSchema.index(
+  { tenantId: 1, integrationProductId: 1 },
+  { unique: true, partialFilterExpression: { integrationProductId: { $type: "objectId" } } }
 );
 
 module.exports = mongoose.model("MenuItem", menuItemSchema);

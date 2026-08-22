@@ -5,6 +5,7 @@ import { themeOptions } from "../lib/themeOptions";
 const navItems = [
   { to: "/dashboard", label: "Genel Bakis" },
   { to: "/dashboard/categories", label: "Kategoriler" },
+  { to: "/dashboard/integration-products", label: "Adisyon Ürünleri" },
   { to: "/dashboard/menu-items", label: "Urunler" },
   { to: "/dashboard/qr", label: "QR Kod" },
 ];

@@ -8,6 +8,7 @@ import AdminPanel from "./pages/AdminPanel";
 import ForgotPassword from "./pages/ForgotPassword";
 import Login from "./pages/Login";
 import MenuItems from "./pages/MenuItems";
+import IntegrationProducts from "./pages/IntegrationProducts";
 import PublicMenu from "./pages/PublicMenu";
 import QRCodePage from "./pages/QRCode";
 import Register from "./pages/Register";
@@ -101,6 +102,7 @@ export default function App() {
       >
         <Route index element={<Dashboard />} />
         <Route path="categories" element={<Categories />} />
+        <Route path="integration-products" element={<IntegrationProducts />} />
         <Route path="menu-items" element={<MenuItems />} />
         <Route path="qr" element={<QRCodePage />} />
       </Route>

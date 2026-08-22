@@ -26,6 +26,43 @@ const menuViewSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const integrationSchema = new mongoose.Schema(
+  {
+    mode: {
+      type: String,
+      enum: ["manual", "gerapos"],
+      default: "manual",
+    },
+    apiKeyHash: {
+      type: String,
+      default: "",
+      select: false,
+    },
+    apiKeyLastFour: {
+      type: String,
+      default: "",
+    },
+    lastSyncedAt: {
+      type: Date,
+      default: null,
+    },
+    lastSyncCount: {
+      type: Number,
+      default: 0,
+    },
+    lastSyncStatus: {
+      type: String,
+      enum: ["idle", "success", "error"],
+      default: "idle",
+    },
+    lastSyncError: {
+      type: String,
+      default: "",
+    },
+  },
+  { _id: false }
+);
+
 const tenantSchema = new mongoose.Schema(
   {
     businessName: {
@@ -118,6 +155,10 @@ const tenantSchema = new mongoose.Schema(
     resetPasswordExpiresAt: {
       type: Date,
       default: null,
+    },
+    integration: {
+      type: integrationSchema,
+      default: () => ({}),
     },
   },
   { timestamps: true }

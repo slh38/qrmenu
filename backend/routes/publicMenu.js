@@ -47,6 +47,7 @@ router.get("/menu/:slug", async (req, res) => {
     const items = await MenuItem.find({
       tenantId: tenant._id,
       isAvailable: true,
+      sourceActive: { $ne: false },
       categoryId: { $in: categories.map((category) => category._id) },
     }).sort({ order: 1, createdAt: 1 });
 

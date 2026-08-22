@@ -12,6 +12,7 @@ const categoryRoutes = require("./routes/category");
 const menuItemRoutes = require("./routes/menuItem");
 const publicMenuRoutes = require("./routes/publicMenu");
 const qrRoutes = require("./routes/qr");
+const integrationRoutes = require("./routes/integration");
 const { createResponse } = require("./utils");
 
 const app = express();
@@ -29,6 +30,7 @@ app.get("/api/health", (_req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/public", publicMenuRoutes);
+app.use("/api/integrations", integrationRoutes);
 app.use("/api/tenant", authMiddleware, tenantRoutes);
 app.use("/api/categories", authMiddleware, categoryRoutes);
 app.use("/api/menu-items", authMiddleware, menuItemRoutes);
