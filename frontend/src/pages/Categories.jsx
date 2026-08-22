@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useDeferredValue, useEffect, useRef, useState } from "react";
 import { request } from "../lib/api";
 
 const initialForm = {
@@ -8,13 +8,32 @@ const initialForm = {
   isActive: true,
 };
 
+const normalizeSearchText = (value = "") =>
+  value
+    .toLocaleLowerCase("tr-TR")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/ı/g, "i");
+
 export default function Categories() {
   const [categories, setCategories] = useState([]);
   const [form, setForm] = useState(initialForm);
   const [editingId, setEditingId] = useState("");
   const [error, setError] = useState("");
   const [uploadingId, setUploadingId] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedPreview, setSelectedPreview] = useState({ categoryId: "", name: "", preview: "" });
+  const formSectionRef = useRef(null);
+  const deferredSearchTerm = useDeferredValue(searchTerm);
+
+  const normalizedSearchTerm = normalizeSearchText(deferredSearchTerm.trim());
+  const filteredCategories = normalizedSearchTerm
+    ? categories.filter((category) =>
+        [category.name, category.description]
+          .map(normalizeSearchText)
+          .some((value) => value.includes(normalizedSearchTerm))
+      )
+    : categories;
 
   const loadCategories = async () => {
     try {
@@ -61,6 +80,9 @@ export default function Categories() {
       description: category.description || "",
       order: category.order || 0,
       isActive: category.isActive,
+    });
+    window.requestAnimationFrame(() => {
+      formSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
   };
 
@@ -111,7 +133,7 @@ export default function Categories() {
 
   return (
     <div className="space-y-6">
-      <section className="glass-panel p-6 shadow-soft">
+      <section ref={formSectionRef} className="glass-panel scroll-mt-24 p-6 shadow-soft">
         <h1 className="font-display text-3xl text-ink">Kategoriler</h1>
         <p className="mt-2 text-sm text-slate-600">Kategori ekle, sirala, pasiflestir veya kategoriye ozel bir vitrin gorseli yukle.</p>
 
@@ -165,8 +187,63 @@ export default function Categories() {
         {error ? <p className="mt-4 text-sm text-red-600">{error}</p> : null}
       </section>
 
+      <section className="glass-panel space-y-4 px-5 py-5 shadow-soft">
+        <div className="flex items-center gap-3 rounded-2xl border border-blue-100 bg-white px-4 py-3 shadow-sm focus-within:border-blue-300 focus-within:ring-4 focus-within:ring-blue-50">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            className="h-5 w-5 shrink-0 text-blue-600"
+            aria-hidden="true"
+          >
+            <circle cx="11" cy="11" r="7" />
+            <path d="m20 20-4-4" />
+          </svg>
+          <input
+            type="search"
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+            placeholder="Kategori adı veya açıklama ara..."
+            className="min-w-0 flex-1 bg-transparent text-base text-slate-800 outline-none placeholder:text-slate-400"
+            aria-label="Kategori ara"
+          />
+          {searchTerm ? (
+            <button
+              type="button"
+              onClick={() => setSearchTerm("")}
+              className="rounded-xl px-3 py-1.5 text-sm font-semibold text-blue-700 transition hover:bg-blue-50"
+            >
+              Temizle
+            </button>
+          ) : null}
+        </div>
+
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="font-semibold text-slate-800">
+              {normalizedSearchTerm
+                ? `“${deferredSearchTerm.trim()}” için ${filteredCategories.length} kategori bulundu`
+                : `${categories.length} kategori listeleniyor`}
+            </p>
+            <p className="mt-1 text-sm text-slate-500">
+              Sonuçlardan kategori bilgilerini veya görselini düzenleyebilirsiniz.
+            </p>
+          </div>
+          {normalizedSearchTerm ? (
+            <button
+              type="button"
+              onClick={() => setSearchTerm("")}
+              className="self-start rounded-2xl border border-blue-200 bg-white px-4 py-2 text-sm font-semibold text-blue-700 transition hover:bg-blue-50 sm:self-auto"
+            >
+              Tüm kategorileri göster
+            </button>
+          ) : null}
+        </div>
+      </section>
+
       <section className="grid gap-4">
-        {categories.map((category) => {
+        {filteredCategories.map((category) => {
           const isPreviewing = selectedPreview.categoryId === category._id && selectedPreview.preview;
           const previewImage = isPreviewing ? selectedPreview.preview : category.imageUrl;
 
@@ -242,7 +319,7 @@ export default function Categories() {
                       onClick={() => startEdit(category)}
                       className="rounded-2xl border border-blue-200 px-4 py-2 text-sm font-semibold text-slate-700"
                     >
-                      Duzenle
+                      Düzenle
                     </button>
                     <button
                       type="button"
@@ -257,6 +334,12 @@ export default function Categories() {
             </article>
           );
         })}
+        {filteredCategories.length === 0 ? (
+          <div className="glass-panel px-6 py-12 text-center shadow-soft">
+            <p className="text-lg font-semibold text-slate-800">Aramanızla eşleşen kategori bulunamadı.</p>
+            <p className="mt-2 text-sm text-slate-500">Farklı bir kategori adı yazarak tekrar deneyin.</p>
+          </div>
+        ) : null}
       </section>
     </div>
   );

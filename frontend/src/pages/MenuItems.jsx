@@ -285,8 +285,8 @@ export default function MenuItems() {
           <div>
             <p className="font-semibold text-slate-800">
               {normalizedSearchTerm
-                ? `“${deferredSearchTerm.trim()}” için ${filteredItems.length} ürün bulundu`
-                : `${items.length} ürün listeleniyor`}
+                ? `${categories.length} kategori • “${deferredSearchTerm.trim()}” için ${filteredItems.length} ürün bulundu`
+                : `${categories.length} kategori • ${items.length} ürün listeleniyor`}
             </p>
             <p className="mt-1 text-sm text-slate-500">Sonuçlardan ürünü bulup Düzenle düğmesine basabilirsiniz.</p>
           </div>
