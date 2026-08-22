@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useDeferredValue, useEffect, useRef, useState } from "react";
 import { request } from "../lib/api";
 
 const initialForm = {
@@ -11,6 +11,13 @@ const initialForm = {
   order: 0,
 };
 
+const normalizeSearchText = (value = "") =>
+  value
+    .toLocaleLowerCase("tr-TR")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/ı/g, "i");
+
 export default function MenuItems() {
   const [categories, setCategories] = useState([]);
   const [items, setItems] = useState([]);
@@ -18,7 +25,19 @@ export default function MenuItems() {
   const [form, setForm] = useState(initialForm);
   const [image, setImage] = useState(null);
   const [editingId, setEditingId] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState("");
+  const formSectionRef = useRef(null);
+  const deferredSearchTerm = useDeferredValue(searchTerm);
+
+  const normalizedSearchTerm = normalizeSearchText(deferredSearchTerm.trim());
+  const filteredItems = normalizedSearchTerm
+    ? items.filter((item) =>
+        [item.name, item.description, item.categoryId?.name]
+          .map(normalizeSearchText)
+          .some((value) => value.includes(normalizedSearchTerm))
+      )
+    : items;
 
   const loadCategories = async () => {
     const result = await request("/categories");
@@ -100,6 +119,9 @@ export default function MenuItems() {
       order: item.order || 0,
     });
     setImage(null);
+    window.requestAnimationFrame(() => {
+      formSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
   };
 
   const deleteItem = async (id) => {
@@ -133,7 +155,38 @@ export default function MenuItems() {
 
   return (
     <div className="space-y-6">
-      <section className="glass-panel p-6 shadow-soft">
+      <section ref={formSectionRef} className="glass-panel scroll-mt-24 p-6 shadow-soft">
+        <div className="mb-5 flex items-center gap-3 rounded-2xl border border-blue-100 bg-white px-4 py-3 shadow-sm focus-within:border-blue-300 focus-within:ring-4 focus-within:ring-blue-50">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            className="h-5 w-5 shrink-0 text-blue-600"
+            aria-hidden="true"
+          >
+            <circle cx="11" cy="11" r="7" />
+            <path d="m20 20-4-4" />
+          </svg>
+          <input
+            type="search"
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+            placeholder="Ürün adı, açıklama veya kategori ara..."
+            className="min-w-0 flex-1 bg-transparent text-base text-slate-800 outline-none placeholder:text-slate-400"
+            aria-label="Ürün ara"
+          />
+          {searchTerm ? (
+            <button
+              type="button"
+              onClick={() => setSearchTerm("")}
+              className="rounded-xl px-3 py-1.5 text-sm font-semibold text-blue-700 transition hover:bg-blue-50"
+            >
+              Temizle
+            </button>
+          ) : null}
+        </div>
+
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="font-display text-3xl text-ink">Menu Urunleri</h1>
@@ -227,8 +280,26 @@ export default function MenuItems() {
         </form>
       </section>
 
+      <section className="glass-panel flex flex-col gap-3 px-5 py-4 shadow-soft sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="font-semibold text-slate-800">
+            {normalizedSearchTerm ? `“${deferredSearchTerm.trim()}” için ${filteredItems.length} ürün bulundu` : `${items.length} ürün listeleniyor`}
+          </p>
+          <p className="mt-1 text-sm text-slate-500">Sonuçlardan ürünü bulup Düzenle düğmesine basabilirsiniz.</p>
+        </div>
+        {normalizedSearchTerm ? (
+          <button
+            type="button"
+            onClick={() => setSearchTerm("")}
+            className="self-start rounded-2xl border border-blue-200 bg-white px-4 py-2 text-sm font-semibold text-blue-700 transition hover:bg-blue-50 sm:self-auto"
+          >
+            Tüm ürünleri göster
+          </button>
+        ) : null}
+      </section>
+
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {items.map((item) => (
+        {filteredItems.map((item) => (
           <article key={item._id} className="glass-panel overflow-hidden shadow-soft">
             {item.imageUrl ? (
               <img src={item.imageUrl} alt={item.name} className="h-44 w-full object-cover" />
@@ -277,6 +348,12 @@ export default function MenuItems() {
             </div>
           </article>
         ))}
+        {filteredItems.length === 0 ? (
+          <div className="glass-panel px-6 py-12 text-center shadow-soft md:col-span-2 xl:col-span-3">
+            <p className="text-lg font-semibold text-slate-800">Aramanızla eşleşen ürün bulunamadı.</p>
+            <p className="mt-2 text-sm text-slate-500">Farklı bir ürün adı veya kategori yazarak tekrar deneyin.</p>
+          </div>
+        ) : null}
       </section>
     </div>
   );
